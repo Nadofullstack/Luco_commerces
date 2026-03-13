@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="fr" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PremiumMarket | L'Excellence du Marché</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Tailwind CSS via CDN ou fichier local -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              primary: '#25D366', // WhatsApp Green
+              midnight: '#0B1C3A',
+              navy: '#1A2A4F',
+              forest: '#2C5F2D',
+              sage: '#A7C4A0',
+              anthracite: '#2D2D2D',
+              taupe: '#6B5E4A',
+              gold: '#FFD700',
+              'background-light': '#f6f8f7',
+              'background-dark': '#0B1C3A',
+            },
+            fontFamily: {
+              display: ['Inter', 'sans-serif'],
+            },
+            borderRadius: {
+              DEFAULT: '0.25rem',
+              lg: '0.5rem',
+              xl: '0.75rem',
+              full: '9999px',
+            },
+          },
+        },
+      }
+    </script>
+    <script type="module" src="/src/main.js"></script>
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+      .glass-nav {
+        background-color: rgba(26, 42, 79, 0.8);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <!-- Le script sera injecté par Vue -->
+  </body>
+</html>
