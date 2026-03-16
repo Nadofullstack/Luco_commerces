@@ -5,9 +5,9 @@
         <h2 class="text-3xl font-bold mb-2">Catégories</h2>
         <div class="h-1 w-20 bg-primary rounded-full"></div>
       </div>
-      <a class="text-primary font-semibold flex items-center gap-1 hover:underline" href="#"
-        >Tout voir <span class="material-symbols-outlined">chevron_right</span>
-      </a>
+      <router-link class="text-primary font-semibold flex items-center gap-1 hover:underline" to="/">
+        Tout voir <span class="material-symbols-outlined">chevron_right</span>
+      </router-link>
     </div>
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
       <div

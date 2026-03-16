@@ -8,22 +8,9 @@
         </div>
 
         <div class="hidden md:flex items-center gap-10">
-          <a class="text-sm font-medium text-slate-200 hover:text-gold transition-colors" href="#"
-            >Home</a
-          >
-          <a
-            class="text-sm font-medium text-slate-200 hover:text-gold transition-colors"
-            href="#products"
-            >Products</a
-          >
-          <a class="text-sm font-medium text-slate-200 hover:text-gold transition-colors" href="#"
-            >About</a
-          >
-          <a
-            class="text-sm font-medium text-slate-200 hover:text-primary transition-colors"
-            href="#"
-            >Contact</a
-          >
+          <router-link class="text-sm font-medium text-slate-200 hover:text-gold transition-colors" to="/">Home</router-link>
+          <router-link class="text-sm font-medium text-slate-200 hover:text-gold transition-colors" :to="{ path: '/', hash: 'products' }">Products</router-link>
+          <router-link class="text-sm font-medium text-slate-200 hover:text-primary transition-colors" to="/contact">Contact</router-link>
         </div>
 
         <div class="flex items-center gap-5">
@@ -52,10 +39,9 @@
     <!-- mobile menu -->
     <div v-if="mobileOpen" class="md:hidden bg-navy/90">
       <div class="px-4 py-2 space-y-2">
-        <a class="block text-slate-200 hover:text-gold" href="#">Home</a>
-        <a class="block text-slate-200 hover:text-primary" href="#products">Products</a>
-        <a class="block text-slate-200 hover:text-primary" href="#">About</a>
-        <a class="block text-slate-200 hover:text-primary" href="#">Contact</a>
+        <router-link class="block text-slate-200 hover:text-gold" to="/">Home</router-link>
+        <router-link class="block text-slate-200 hover:text-primary" :to="{ path: '/', hash: 'products' }">Products</router-link>
+        <router-link class="block text-slate-200 hover:text-primary" to="/contact">Contact</router-link>
       </div>
     </div>
   </nav>

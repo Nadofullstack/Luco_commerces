@@ -11,8 +11,8 @@
             <p class="text-sm font-medium text-slate-500 uppercase tracking-widest mb-1">
               Téléphone
             </p>
-            <p class="text-xl font-semibold text-midnight dark:text-white">+33 (0)1 23 45 67 89</p>
-            <p class="text-slate-400 text-sm mt-1">Lun - Ven, 9h00 - 19h00</p>
+            <p class="text-xl font-semibold text-midnight dark:text-white">+229 01 50 69 14 46</p>
+            <p class="text-slate-400 text-sm mt-1">Lun - Ven, 9h00 - 20h00</p>
           </div>
         </div>
         <div class="flex items-start gap-6">
@@ -22,8 +22,7 @@
           <div>
             <p class="text-sm font-medium text-slate-500 uppercase tracking-widest mb-1">Email</p>
             <p class="text-xl font-semibold text-midnight dark:text-white">
-              contact@luxe-premium.fr
-            </p>
+nadegedjossou299@gmail.com            </p>
             <p class="text-slate-400 text-sm mt-1">Réponse sous 24 heures</p>
           </div>
         </div>
@@ -33,10 +32,10 @@
           </div>
           <div>
             <p class="text-sm font-medium text-slate-500 uppercase tracking-widest mb-1">
-              Boutique Flagship
+              Boutique Luxeco
             </p>
             <p class="text-xl font-semibold text-midnight dark:text-white">
-              15 Avenue Montaigne, 75008 Paris
+             Quatier Dowa
             </p>
             <p class="text-slate-400 text-sm mt-1">France</p>
           </div>

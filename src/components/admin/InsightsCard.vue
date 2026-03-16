@@ -7,13 +7,13 @@
       <p class="text-sage text-sm leading-relaxed mb-4">
         Your "Beauty" category is trending. Consider adding more variations to boost sales by 15%.
       </p>
-      <a class="text-primary text-sm font-bold flex items-center gap-1 group" href="#">
+      <router-link class="text-primary text-sm font-bold flex items-center gap-1 group" to="/admin">
         View Full Report
         <span
           class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform"
           >arrow_forward</span
         >
-      </a>
+      </router-link>
     </div>
     <span
       class="material-symbols-outlined absolute -right-6 -bottom-6 text-9xl text-sage/5 rotate-12"

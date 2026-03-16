@@ -5,9 +5,9 @@
       <div class="max-w-7xl mx-auto px-6">
         <!-- Breadcrumbs -->
         <nav class="flex items-center gap-2 text-sm text-slate-400 mb-8">
-          <a class="hover:text-primary transition-colors" href="#">Home</a>
+          <router-link class="hover:text-primary transition-colors" to="/">Home</router-link>
           <span class="material-symbols-outlined text-xs">chevron_right</span>
-          <a class="hover:text-primary transition-colors" href="#">Watches</a>
+          <router-link class="hover:text-primary transition-colors" to="/">Watches</router-link>
           <span class="material-symbols-outlined text-xs">chevron_right</span>
           <span class="text-slate-100">{{ product.name }}</span>
         </nav>

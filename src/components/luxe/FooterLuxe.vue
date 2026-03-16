@@ -14,21 +14,21 @@
         <div>
           <h4 class="text-white font-bold mb-6">Quick Links</h4>
           <ul class="space-y-4 text-sm text-slate-400">
-            <li><a class="hover:text-primary transition-colors" href="#">About Us</a></li>
-            <li><a class="hover:text-primary transition-colors" href="#">Collections</a></li>
-            <li><a class="hover:text-primary transition-colors" href="#">Store Locator</a></li>
-            <li><a class="hover:text-primary transition-colors" href="#">Press Room</a></li>
+  
+            <li><router-link class="hover:text-primary transition-colors" to="/">Collections</router-link></li>
+            <li><router-link class="hover:text-primary transition-colors" to="/">Store Locator</router-link></li>
+            <li><router-link class="hover:text-primary transition-colors" to="/">Press Room</router-link></li>
           </ul>
         </div>
         <div>
           <h4 class="text-white font-bold mb-6">Support</h4>
           <ul class="space-y-4 text-sm text-slate-400">
-            <li><a class="hover:text-primary transition-colors" href="#">Track Order</a></li>
+            <li><router-link class="hover:text-primary transition-colors" to="/">Track Order</router-link></li>
             <li>
-              <a class="hover:text-primary transition-colors" href="#">Returns &amp; Refunds</a>
+              <router-link class="hover:text-primary transition-colors" to="/">Returns &amp; Refunds</router-link>
             </li>
-            <li><a class="hover:text-primary transition-colors" href="#">Contact Support</a></li>
-            <li><a class="hover:text-primary transition-colors" href="#">WhatsApp Concierge</a></li>
+            <li><router-link class="hover:text-primary transition-colors" to="/">Contact Support</router-link></li>
+            <li><router-link class="hover:text-primary transition-colors" to="/">WhatsApp Concierge</router-link></li>
           </ul>
         </div>
         <div>
@@ -55,14 +55,14 @@
       >
         <p class="text-xs text-slate-500">© 2024 LUXE Premium Collections. All rights reserved.</p>
         <div class="flex gap-6">
-          <a class="text-slate-500 hover:text-primary" href="#"
-            ><span class="material-symbols-outlined text-xl">social_leaderboard</span></a
+          <router-link class="text-slate-500 hover:text-primary" to="/"
+            ><span class="material-symbols-outlined text-xl">social_leaderboard</span></router-link
           >
-          <a class="text-slate-500 hover:text-primary" href="#"
-            ><span class="material-symbols-outlined text-xl">camera_alt</span></a
+          <router-link class="text-slate-500 hover:text-primary" to="/"
+            ><span class="material-symbols-outlined text-xl">camera_alt</span></router-link
           >
-          <a class="text-slate-500 hover:text-primary" href="#"
-            ><span class="material-symbols-outlined text-xl">share</span></a
+          <router-link class="text-slate-500 hover:text-primary" to="/"
+            ><span class="material-symbols-outlined text-xl">share</span></router-link
           >
         </div>
       </div>

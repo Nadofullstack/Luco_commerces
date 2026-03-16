@@ -13,57 +13,55 @@
           ligne avec une attention particulière portée aux détails.
         </p>
         <div class="flex gap-4">
-          <a
+          <router-link
             class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary/20 transition-colors text-slate-300"
-            href="#"
+            to="/"
           >
             <span class="material-symbols-outlined">social_leaderboard</span>
-          </a>
-          <a
+          </router-link>
+          <router-link
             class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary/20 transition-colors text-slate-300"
-            href="#"
+            to="/"
           >
             <span class="material-symbols-outlined">camera_enhance</span>
-          </a>
-          <a
+          </router-link>
+          <router-link
             class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary/20 transition-colors text-slate-300"
-            href="#"
+            to="/"
           >
             <span class="material-symbols-outlined">mail</span>
-          </a>
+          </router-link>
         </div>
       </div>
       <div>
         <h4 class="text-taupe font-bold mb-6 text-lg">Navigation</h4>
         <ul class="space-y-4">
           <li>
-            <a class="text-slate-400 hover:text-primary transition-colors" href="#">Accueil</a>
+            <router-link class="text-slate-400 hover:text-primary transition-colors" to="/">Accueil</router-link>
           </li>
           <li>
-            <a class="text-slate-400 hover:text-primary transition-colors" href="#">Nouveautés</a>
+            <router-link class="text-slate-400 hover:text-primary transition-colors" to="/">Nouveautés</router-link>
           </li>
           <li>
-            <a class="text-slate-400 hover:text-primary transition-colors" href="#">Best Sellers</a>
+            <router-link class="text-slate-400 hover:text-primary transition-colors" to="/">Best Sellers</router-link>
           </li>
           <li>
-            <a class="text-slate-400 hover:text-primary transition-colors" href="#">À Propos</a>
+            <router-link class="text-slate-400 hover:text-primary transition-colors" to="/">À Propos</router-link>
           </li>
         </ul>
       </div>
       <div>
         <h4 class="text-taupe font-bold mb-6 text-lg">Support</h4>
         <ul class="space-y-4">
-          <li><a class="text-slate-400 hover:text-primary transition-colors" href="#">FAQ</a></li>
+          <li><router-link class="text-slate-400 hover:text-primary transition-colors" to="/">FAQ</router-link></li>
           <li>
-            <a class="text-slate-400 hover:text-primary transition-colors" href="#">Livraison</a>
+            <router-link class="text-slate-400 hover:text-primary transition-colors" to="/">Livraison</router-link>
           </li>
           <li>
-            <a class="text-slate-400 hover:text-primary transition-colors" href="#">Retours</a>
+            <router-link class="text-slate-400 hover:text-primary transition-colors" to="/">Retours</router-link>
           </li>
           <li>
-            <a class="text-slate-400 hover:text-primary transition-colors" href="#"
-              >Confidentialité</a
-            >
+            <router-link class="text-slate-400 hover:text-primary transition-colors" to="/">Confidentialité</router-link>
           </li>
         </ul>
       </div>
