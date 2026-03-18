@@ -26,38 +26,38 @@
         <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
           <tr
             v-for="order in filteredOrders"
-            :key="order.id"
+            :key="order._id"
             class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors"
           >
             <td
               class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900 dark:text-slate-100"
             >
-              {{ order.id }}
+              {{ order.orderNumber }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="flex items-center gap-3">
                 <div
                   class="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-xs font-bold text-slate-600 dark:text-slate-400"
                 >
-                  {{ order.initials }}
+                  {{ getInitials(order.customer?.name) }}
                 </div>
-                <span class="text-sm text-slate-700 dark:text-slate-200">{{ order.customer }}</span>
+                <span class="text-sm text-slate-700 dark:text-slate-200">{{ order.customer?.name }}</span>
               </div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-              {{ order.date }}
+              {{ formatDate(order.createdAt) }}
             </td>
             <td
               class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-slate-100"
             >
-              {{ order.total }}
+              {{ formatPrice(order.total) }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-              {{ order.payment }}
+              {{ order.paymentMethod }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span
-                :class="order.statusClass"
+                :class="getStatusClass(order.status)"
                 class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
               >
                 {{ order.status }}
@@ -67,7 +67,7 @@
               <div class="flex items-center justify-end gap-2">
                 <button class="text-primary hover:underline font-medium">View Details</button>
                 <span class="text-slate-300 dark:text-slate-700">|</span>
-                <button class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">
+                <button @click="$emit('edit', order)" class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">
                   Update
                 </button>
               </div>
@@ -126,20 +126,70 @@ const props = defineProps({
   },
 })
 
+defineEmits(['edit'])
+
 const statusFilter = ref('All Status')
-const dateRange = ref('Oct 1, 2023 - Oct 31, 2023')
+const dateRange = ref('')
 
 const filteredOrders = computed(() => {
   let list = props.orders
+  
+  // Filter by status
   if (statusFilter.value && statusFilter.value !== 'All Status') {
     list = list.filter((o) => o.status === statusFilter.value)
   }
-  // simple date range check could be added here
+  
+  // Filter by date range
+  if (dateRange.value) {
+    const [startStr, endStr] = dateRange.value.split(' - ')
+    if (startStr && endStr) {
+      const start = new Date(startStr)
+      const end = new Date(endStr)
+      list = list.filter((o) => {
+        const orderDate = new Date(o.createdAt)
+        return orderDate >= start && orderDate <= end
+      })
+    }
+  }
+  
   return list
 })
 
 function applyFilters() {
-  // placeholder for actions when the filter button is clicked
-  // currently filters are reactive automatically
+  // Filters are applied automatically through computed property
+}
+
+const getInitials = (name) => {
+  if (!name) return '??'
+  return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+}
+
+const formatDate = (date) => {
+  if (!date) return ''
+  return new Date(date).toLocaleDateString('en-US', { 
+    year: 'numeric', 
+    month: 'short', 
+    day: 'numeric' 
+  })
+}
+
+const formatPrice = (price) => {
+  return new Intl.NumberFormat('fr-CM', {
+    style: 'currency',
+    currency: 'XAF',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(price || 0)
+}
+
+const getStatusClass = (status) => {
+  const classes = {
+    'Pending': 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300',
+    'Processing': 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-300',
+    'Shipped': 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300',
+    'Delivered': 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300',
+    'Cancelled': 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300'
+  }
+  return classes[status] || 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300'
 }
 </script>

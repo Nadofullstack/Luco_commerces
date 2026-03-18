@@ -20,23 +20,30 @@
     </div>
     <div class="flex items-center gap-2">
       <span class="text-sm font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap"
-        >Date Range:</span
+        >From:</span
       >
-      <div class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg px-3 py-1.5">
-        <span class="material-symbols-outlined text-slate-400 text-sm mr-2">calendar_today</span>
-        <input
-          v-model="dateRange"
-          class="bg-transparent border-none p-0 text-sm text-slate-700 dark:text-slate-200 focus:ring-0 w-44"
-          type="text"
-        />
-      </div>
+      <input
+        v-model="startDate"
+        type="date"
+        class="bg-slate-100 dark:bg-slate-800 border-none text-sm rounded-lg focus:ring-primary/50 text-slate-700 dark:text-slate-200 py-1.5 px-2"
+      />
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="text-sm font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap"
+        >To:</span
+      >
+      <input
+        v-model="endDate"
+        type="date"
+        class="bg-slate-100 dark:bg-slate-800 border-none text-sm rounded-lg focus:ring-primary/50 text-slate-700 dark:text-slate-200 py-1.5 px-2"
+      />
     </div>
     <div class="flex-1"></div>
     <button
-      @click="$emit('apply')"
-      class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700"
+      @click="applyFilters"
+      class="px-3 py-1.5 bg-primary text-white text-sm font-medium rounded-lg hover:bg-blue-600"
     >
-      <span class="material-symbols-outlined">filter_list</span>
+      Apply
     </button>
   </div>
 </template>
@@ -46,13 +53,21 @@ import { ref, watch } from 'vue'
 
 const props = defineProps({
   status: { type: String, default: 'All Status' },
-  dateRange: { type: String, default: 'Oct 1, 2023 - Oct 31, 2023' },
+  dateRange: { type: String, default: '' },
 })
 const emit = defineEmits(['update:status', 'update:dateRange', 'apply'])
 
 const status = ref(props.status)
-const dateRange = ref(props.dateRange)
+const startDate = ref('')
+const endDate = ref('')
 
 watch(status, (v) => emit('update:status', v))
-watch(dateRange, (v) => emit('update:dateRange', v))
+
+function applyFilters() {
+  const dateRangeValue = startDate.value && endDate.value 
+    ? `${startDate.value} - ${endDate.value}` 
+    : ''
+  emit('update:dateRange', dateRangeValue)
+  emit('apply')
+}
 </script>

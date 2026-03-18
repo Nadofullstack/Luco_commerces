@@ -60,6 +60,12 @@ exports.updateProduct = async (req, res) => {
   try {
     const { id } = req.params
     const updates = req.body
+    
+    // Handle image upload
+    if (req.file) {
+      updates.image = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`
+    }
+    
     const product = await Product.findByIdAndUpdate(id, updates, { new: true })
     if (!product) {
       return res.status(404).json({ error: 'Produit non trouvé.' })

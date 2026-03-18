@@ -7,6 +7,8 @@ dotenv.config()
 const connectDB = require('./config/db')
 const adminRoutes = require('./routes/adminRoutes')
 const productRoutes = require('./routes/productRoutes')
+const orderRoutes = require('./routes/orderRoutes')
+const customerRoutes = require('./routes/customerRoutes')
 const { createDefaultAdmin } = require('./controllers/authController')
 const { createDefaultProducts } = require('./controllers/productController')
 
@@ -24,6 +26,8 @@ app.use(express.json())
 
 app.use('/api/admin', adminRoutes)
 app.use('/api/products', productRoutes)
+app.use('/api/orders', orderRoutes)
+app.use('/api/customers', customerRoutes)
 app.use('/uploads', express.static('uploads'))
 
 app.get('/', (req, res) => {

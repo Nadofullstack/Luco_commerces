@@ -1,8 +1,15 @@
 <template>
   <header
-    class="h-16 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-midnight px-8 flex items-center justify-between z-10"
+    class="h-16 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-midnight px-4 md:px-8 flex items-center justify-between z-10"
   >
     <div class="flex items-center gap-4 flex-1 max-w-xl">
+      <!-- Mobile Toggle Button -->
+      <button 
+        @click="$emit('toggle-sidebar')"
+        class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors lg:hidden"
+      >
+        <span class="material-symbols-outlined">menu</span>
+      </button>
       <div class="relative w-full">
         <span
           class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl"
@@ -72,7 +79,7 @@ const props = defineProps({
 })
 
 // Émits
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'toggle-sidebar'])
 
 // Avatar par défaut (placeholder)
 const defaultAvatar = 'https://lh3.googleusercontent.com/aida-public/AB6AXuDFTXSFRwD8zaq2xZLcS-mDX8AGpONw1d-52gxEcPc-YzHmJaq4yTGxknA9UBVpZdzBSafc7f4_vdX50-fzyiZ6XQS5prM7DFZRoZGTZhLasGafmtqfw6aVRTt-y6jQC0jn7oMVqfICIudljky6_E6gmC74NzlMKh8sdzl6TFptpRiAIlmmwAs37GW8EDww_cYuTVO-Vc14BhZPBtB-1HetWAtwAyu5xQWZt2pUwMH5rfGfI8J6HCp9yBE0XpDulnDyAwbV1FC5lDr_'

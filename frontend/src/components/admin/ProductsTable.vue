@@ -1,9 +1,10 @@
 <template>
   <div
-    class="xl:col-span-2 bg-white dark:bg-midnight rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col"
+    class="xl:col-span-2 bg-white dark:bg-midnight rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col w-full"
   >
+    <!-- Header -->
     <div
-      class="p-6 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4"
+      class="p-4 md:p-6 border-b border-slate-200 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-3"
     >
       <h3 class="font-bold text-lg text-slate-900 dark:text-white">Inventory Overview</h3>
       <div class="flex items-center gap-2">
@@ -28,17 +29,18 @@
       </div>
     </div>
     
-    <div class="overflow-x-auto">
+    <!-- Desktop Table View (hidden on mobile/tablet) -->
+    <div class="hidden md:block overflow-x-auto">
       <table class="w-full text-left">
         <thead
           class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-[11px] uppercase tracking-wider font-bold"
         >
           <tr>
-            <th class="px-6 py-4">Product</th>
-            <th class="px-6 py-4">Category</th>
-            <th class="px-6 py-4">Price</th>
-            <th class="px-6 py-4">Stock Status</th>
-            <th class="px-6 py-4 text-right">Actions</th>
+            <th class="px-4 lg:px-6 py-4">Product</th>
+            <th class="px-4 lg:px-6 py-4 hidden lg:table-cell">Category</th>
+            <th class="px-4 lg:px-6 py-4">Price</th>
+            <th class="px-4 lg:px-6 py-4 hidden sm:table-cell">Stock Status</th>
+            <th class="px-4 lg:px-6 py-4 text-right">Actions</th>
           </tr>
         </thead>
         <tbody v-if="filteredProducts.length" class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -47,9 +49,9 @@
             :key="item.sku"
             class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
           >
-            <td class="px-6 py-4">
+            <td class="px-4 lg:px-6 py-4">
               <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                <div class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 overflow-hidden flex-shrink-0">
                   <img 
                     :src="item.image" 
                     :alt="item.name" 
@@ -57,19 +59,19 @@
                     @error="handleImageError"
                   />
                 </div>
-                <div>
-                  <p class="text-sm font-bold text-slate-900 dark:text-white">{{ item.name }}</p>
+                <div class="min-w-0">
+                  <p class="text-sm font-bold text-slate-900 dark:text-white truncate max-w-[150px] lg:max-w-none">{{ item.name }}</p>
                   <p class="text-[11px] text-slate-500">SKU: {{ item.sku }}</p>
                 </div>
               </div>
             </td>
-            <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
+            <td class="px-4 lg:px-6 py-4 text-sm text-slate-600 dark:text-slate-400 hidden lg:table-cell">
               {{ item.category }}
             </td>
-            <td class="px-6 py-4 text-sm font-bold text-slate-900 dark:text-white">
+            <td class="px-4 lg:px-6 py-4 text-sm font-bold text-slate-900 dark:text-white">
               {{ formatPrice(item.price) }}
             </td>
-            <td class="px-6 py-4">
+            <td class="px-4 lg:px-6 py-4 hidden sm:table-cell">
               <span
                 :class="getStatusClass(item.status)"
                 class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase"
@@ -78,8 +80,8 @@
                 {{ item.status }}
               </span>
             </td>
-            <td class="px-6 py-4 text-right">
-              <div class="flex items-center justify-end gap-2">
+            <td class="px-4 lg:px-6 py-4 text-right">
+              <div class="flex items-center justify-end gap-1">
                 <button 
                   @click="$emit('edit', item)"
                   class="p-1.5 text-slate-400 hover:text-blue-500 transition-colors"
@@ -106,29 +108,106 @@
           </tr>
         </tbody>
       </table>
-      
- 
     </div>
     
+    <!-- Mobile/Tablet Card View -->
+    <div class="md:hidden">
+      <div v-if="filteredProducts.length" class="divide-y divide-slate-100 dark:divide-slate-800">
+        <div
+          v-for="item in filteredProducts"
+          :key="item.sku"
+          class="p-4 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+        >
+          <div class="flex items-start gap-3">
+            <!-- Product Image -->
+            <div class="w-14 h-14 rounded-lg bg-slate-100 dark:bg-slate-800 overflow-hidden flex-shrink-0">
+              <img 
+                :src="item.image" 
+                :alt="item.name" 
+                class="w-full h-full object-cover"
+                @error="handleImageError"
+              />
+            </div>
+            
+            <!-- Product Info -->
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0">
+                  <p class="text-sm font-bold text-slate-900 dark:text-white truncate">{{ item.name }}</p>
+                  <p class="text-[11px] text-slate-500">SKU: {{ item.sku }}</p>
+                </div>
+                
+                <!-- Actions -->
+                <div class="flex items-center gap-1 flex-shrink-0">
+                  <button 
+                    @click="$emit('edit', item)"
+                    class="p-1.5 text-slate-400 hover:text-blue-500 transition-colors"
+                    :title="`Edit ${item.name}`"
+                  >
+                    <span class="material-symbols-outlined text-lg">edit</span>
+                  </button>
+                  <button 
+                    @click="$emit('delete', item)"
+                    class="p-1.5 text-slate-400 hover:text-red-500 transition-colors"
+                    :title="`Delete ${item.name}`"
+                  >
+                    <span class="material-symbols-outlined text-lg">delete</span>
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Price and Status -->
+              <div class="flex items-center justify-between mt-2">
+                <span class="text-sm font-bold text-slate-900 dark:text-white">
+                  {{ formatPrice(item.price) }}
+                </span>
+                <span
+                  :class="getStatusClass(item.status)"
+                  class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase"
+                >
+                  <span :class="getStatusDotClass(item.status)" class="w-1.5 h-1.5 rounded-full"></span>
+                  {{ item.status }}
+                </span>
+              </div>
+              
+              <!-- Category (mobile only) -->
+              <div class="mt-2">
+                <span class="text-xs text-slate-500 dark:text-slate-400">{{ item.category }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Empty State -->
+      <div v-else class="p-8 text-center text-slate-500 dark:text-slate-400">
+        <p>No products to display</p>
+      </div>
+    </div>
+    
+    <!-- Pagination -->
     <div
-      class="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/30 dark:bg-white/5 flex items-center justify-between"
+      class="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/30 dark:bg-white/5 flex flex-col sm:flex-row items-center justify-between gap-3"
     >
-      <p class="text-xs text-slate-500">
+      <p class="text-xs text-slate-500 order-2 sm:order-1">
         Showing <span class="font-bold">{{ pagination.from }}-{{ pagination.to }}</span> of
         <span class="font-bold">{{ pagination.total }}</span> products
       </p>
-      <div class="flex gap-2">
+      <div class="flex gap-2 order-1 sm:order-2">
         <button
           @click="prevPage"
           :disabled="currentPage === 1"
-          class="p-1 border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-800 text-slate-400 hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          class="p-1.5 border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-800 text-slate-400 hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <span class="material-symbols-outlined text-sm leading-none">chevron_left</span>
         </button>
+        <span class="px-3 py-1 text-xs font-medium text-slate-600 dark:text-slate-300">
+          {{ currentPage }} / {{ totalPages }}
+        </span>
         <button
           @click="nextPage"
           :disabled="currentPage === totalPages"
-          class="p-1 border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-800 text-slate-400 hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          class="p-1.5 border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-800 text-slate-400 hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <span class="material-symbols-outlined text-sm leading-none">chevron_right</span>
         </button>
@@ -208,11 +287,11 @@ const totalPages = computed(() => {
 
 // Méthodes
 const formatPrice = (price) => {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat('fr-CM', {
     style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
+    currency: 'XAF',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
   }).format(price)
 }
 
