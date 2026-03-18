@@ -35,6 +35,7 @@
         v-for="item in menuItems"
         :key="item.name"
         :to="item.path"
+        @click="handleLinkClick"
         class="flex items-center gap-3 px-3 py-3 rounded-xl transition-all"
         :class="[
           route.path === item.path ? 'bg-primary text-midnight' : 'text-slate-400 hover:text-white hover:bg-white/5',
@@ -50,6 +51,7 @@
       </div>
       <router-link
         to="/admin/settings"
+        @click="handleLinkClick"
         class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
         :class="isCollapsed ? 'justify-center' : ''"
       >
@@ -58,6 +60,7 @@
       </router-link>
       <router-link
         to="/admin/support"
+        @click="handleLinkClick"
         class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
         :class="isCollapsed ? 'justify-center' : ''"
       >
@@ -88,7 +91,7 @@ defineProps({
   }
 })
 
-defineEmits(['toggle'])
+const emit = defineEmits(['toggle', 'link-click'])
 
 const menuItems = [
   { name: 'Dashboard', icon: 'dashboard', path: '/admin' },
@@ -96,4 +99,9 @@ const menuItems = [
   { name: 'Orders', icon: 'shopping_cart', path: '/admin/orders' },
   { name: 'Customers', icon: 'group', path: '/admin/customers' },
 ]
+
+const handleLinkClick = () => {
+  // Émettre l'événement link-click pour fermer le sidebar en mobile
+  emit('link-click')
+}
 </script>

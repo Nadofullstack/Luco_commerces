@@ -15,7 +15,7 @@
         sidebarCollapsed ? 'lg:w-20' : 'lg:w-64'
       ]"
     >
-      <AdminSidebar :isCollapsed="sidebarCollapsed" @toggle="handleSidebarToggle" />
+      <AdminSidebar :isCollapsed="sidebarCollapsed" @toggle="handleSidebarToggle" @link-click="handleLinkClick" />
     </div>
 
     <!-- Main Content -->
@@ -167,6 +167,13 @@ const handleSidebarToggle = (type) => {
     sidebarOpen.value = false
   } else {
     sidebarCollapsed.value = !sidebarCollapsed.value
+  }
+}
+
+const handleLinkClick = () => {
+  // Fermer le sidebar en mobile quand on clique sur un lien
+  if (window.innerWidth < 1024) {
+    sidebarOpen.value = false
   }
 }
 
