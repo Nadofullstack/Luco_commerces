@@ -15,7 +15,20 @@
       @select="onCategorySelect"
     />
 
+    <!-- Loading state -->
+    <div v-if="isLoading" class="flex justify-center py-20">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+    </div>
+
+    <!-- Error state -->
+    <div v-else-if="error" class="text-center py-20">
+      <p class="text-red-500">{{ error }}</p>
+      <button @click="fetchProducts" class="mt-4 px-4 py-2 bg-primary text-white rounded">Réessayer</button>
+    </div>
+
+    <!-- Products from database -->
     <FeaturedProducts
+      v-else
       :products="filteredProducts"
       @order="handleOrder"
       @view="handleView"
@@ -29,7 +42,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import Navbar from '../components/layout/Navbar.vue'
 import HeroSection from '../components/home/HeroSection.vue'
@@ -42,46 +55,12 @@ import WhatsAppButton from '../components/ui/WhatsAppButton.vue'
 
 const router = useRouter()
 
-// sample data (could be fetched from an API)
-const products = ref([
-  {
-    id: 1,
-    category: 'horlogerie',
-    name: 'Classic Silver Edition',
-    price: '123 765 FCFA',
-    image:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuCcZ6WU5OLcA-0oCNVfl2JtAjych7YTPI5jrG2SSRXWhY2gk_gaRlTMMgwW6Ta0VtMAOYawMqC_hpJkD_PtfkueMOk1qim8IO9gErwRbN7mhCIABtnARmy27Kuk6u4rvUdpu38uYz4oAysaJwHwbFT49zElyTa_GLG_vKpM1RCLe49wxvwf7jD10arTw71bLh1cty3l_rDN5e4hCdCDl3nGNyvEDwUmKRJ0bc5KyzM0Pit1RLLp7wspWCvmW7u4atB72ZY8TNPP5tYz',
-    description: 'Montre analogique de précision avec cadran en saphir.',
-  },
-  {
-    id: 2,
-    category: 'technologie',
-    name: 'Audio Pro Max',
-    price: '227 275 FCFA',
-    image:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuB_mghSYzkBFP360StNUWQ0Cbavh7pd9miz2IllnWxWaQBJQ7mMLsFFcP4OuqbFx4lPrHx-p46OQrvW9Q14tj8MidymwvaN4Ak1p6RzHJMhJBVK9wXr38_Ka7GUs9KVgrUZWpO_OvhY7qvvjxxHaSnQi474jqsOC6LxlZHyN9BKl3mxm0r4PrO6XOya2Xt-pJ3GT9reKcr2FpynZXFRQ9wj0XpUhoIBbH0c947ILAAZ89ubDkZmrxoCoIF2rouV6A38ZaP5qknsq34U',
-    description: 'Casque audio haute fidélité avec réduction de bruit active.',
-  },
-  {
-    id: 3,
-    category: 'mode-homme',
-    name: 'Urban Stealth',
-    price: '83 985 FCFA',
-    image:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuBzzeHnO2Nnbj62doM770eEQg_PTo-IWgv6Xopam-nDCv6j_F0GbLariSdvMTEQWkL-ueFgiQDG6V6fDQNQiVqqdMnlIBDZuS1v2YOyrgC4UhMmgk1aYe_lXMoQzf9ovVq349Jp1uSka6lKyVqTioGNqwxs4wvtZoL4UQyxIXq1hYws02sAq_4jDnMD4dvv9fexwDUpCz0MHzq5-LUVrHtrmyWCsDxvfd0XyTeUBU_79TQeAXC4u6-wyTMQ9NOpgc1ta9n_aPchx7eD',
-    description: 'Baskets de ville minimalistes en cuir de qualité premium.',
-  },
-  {
-    id: 4,
-    category: 'parfumerie',
-    name: 'Retro Vision X',
-    price: '139 945 FCFA',
-    image:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuD6arAfhcm-sR31WiwZq34B1w6Xm0nF2-Y64TfHmypXwbXTwBfHiwX_IiKQIdwKr4Za4ngbNWF1nJmVnvTASxMK4OjhJyPvxNGtwNIjpLsz6NwWX65XdRxzJFjvrXSAqcNxGhpSSBvDB2_9tjEwz4BiD7e5c96mnnjBNcBpWPUUOtA1EpXUsHU0PG1pYhM1mFB27AcdRUBGJDOVDBbQKmz6XhxTQjAy0SvsdRYnSj7ycYdKXVw5KAK1SYn7T2iuYOc4SrFy5i8eQ1el',
-    description: 'Appareil photo instantané au design iconique des années 70.',
-  },
-])
+// Products from database
+const products = ref([])
+const isLoading = ref(false)
+const error = ref('')
 
+// Static categories for filtering
 const categories = ref([
   {
     id: 'horlogerie',
@@ -111,6 +90,57 @@ const categories = ref([
 
 const selectedCategory = ref(null)
 
+// Fetch products from API
+const fetchProducts = async () => {
+  try {
+    isLoading.value = true
+    error.value = ''
+    const res = await fetch('/api/products/public')
+    const data = await res.json()
+    
+    if (!res.ok) {
+      throw new Error(data.error || 'Erreur lors du chargement des produits')
+    }
+    
+    // Transform database products to match frontend format
+    products.value = data.products.map(p => ({
+      id: p._id,
+      name: p.name,
+      description: p.description || '',
+      price: formatPrice(p.price),
+      image: p.image,
+      category: mapCategory(p.category),
+      rawPrice: p.price
+    }))
+  } catch (err) {
+    error.value = err.message
+    console.error('Error fetching products:', err)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// Map backend categories to frontend categories
+const mapCategory = (category) => {
+  const categoryMap = {
+    'Electronics': 'technologie',
+    'Fashion': 'mode-homme',
+    'Beauty': 'parfumerie',
+    'Accessories': 'horlogerie',
+    'General': 'horlogerie'
+  }
+  return categoryMap[category] || 'horlogerie'
+}
+
+// Format price to CFA
+const formatPrice = (price) => {
+  return new Intl.NumberFormat('fr-CM', {
+    style: 'currency',
+    currency: 'XAF',
+    minimumFractionDigits: 0
+  }).format(price)
+}
+
 const filteredProducts = computed(() => {
   if (!selectedCategory.value) return products.value
   return products.value.filter((p) => p.category === selectedCategory.value.id)
@@ -122,7 +152,7 @@ function onCategorySelect(cat) {
 
 function handleOrder(product) {
   const phone = '22900000000' // placeholder
-  const text = encodeURIComponent(`Bonjour, je souhaite commander : ${product.name}`)
+  const text = encodeURIComponent(`Bonjour, je souhaite commander : ${product.name} - ${product.price}`)
   window.open(`https://wa.me/${phone}?text=${text}`, '_blank')
 }
 
@@ -136,11 +166,13 @@ function onHeroPrimary() {
 }
 
 function onHeroSecondary() {
-  // future: navigate to about/story
   console.log('hero secondary clicked')
 }
 
 function onContact() {
   router.push('/contact')
 }
+
+// Fetch products on component mount
+onMounted(fetchProducts)
 </script>
