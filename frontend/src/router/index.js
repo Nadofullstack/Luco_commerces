@@ -1,14 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import LuxeView from '../views/LuxeView.vue'
 import ProductDetailView from '../views/ProductDetailView.vue'
 import ContactView from '../views/ContactView.vue'
+import CartView from '../views/CartView.vue'
+import CheckoutView from '../views/CheckoutView.vue'
 
 const routes = [
   { path: '/', name: 'home', component: HomeView },
-  { path: '/luxe', name: 'luxe', component: LuxeView },
   { path: '/product/:id', name: 'product', component: ProductDetailView },
   { path: '/contact', name: 'contact', component: ContactView },
+  { path: '/panier', name: 'cart', component: CartView },
+  { path: '/checkout', name: 'checkout', component: CheckoutView },
+  
+  // Admin Routes
   {
     path: '/admin',
     name: 'admin',
@@ -55,13 +59,14 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const requiresAdmin = to.meta.requiresAdmin
-  const token = localStorage.getItem('adminToken')
+  const adminToken = localStorage.getItem('adminToken')
 
-  if (requiresAdmin && !token) {
+  // Protection routes admin
+  if (requiresAdmin && !adminToken) {
     return next({ name: 'admin-login' })
   }
 
-  if (to.name === 'admin-login' && token) {
+  if (to.name === 'admin-login' && adminToken) {
     return next({ name: 'admin-products' })
   }
 

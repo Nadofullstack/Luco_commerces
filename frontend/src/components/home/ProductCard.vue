@@ -28,8 +28,8 @@
         @click="handleOrder"
       >
         <span class="material-symbols-outlined text-lg">chat</span>
-        Commander sur WhatsApp
-      </button>
+           Ajouter
+       </button>
     </div>
   </div>
 </template>

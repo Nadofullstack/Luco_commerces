@@ -19,8 +19,11 @@
         </p>
       </div>
       <a
-        class="inline-flex items-center justify-center gap-3 bg-primary hover:bg-[#20bd5a] text-midnight font-bold py-4 px-10 rounded-full transition-all transform hover:scale-105 shadow-lg group"
-        href="#"
+        class="inline-flex items-center justify-center gap-3 bg-primary hover:bg-[#20bd5a] text-midnight font-bold py-4 px-10 rounded-full transition-all transform hover:scale-105 shadow-lg group cursor-pointer"
+        :href="whatsappUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+        @click="handleClick"
       >
         <span class="material-symbols-outlined text-2xl">chat</span>
         <span>Nous contacter sur WhatsApp</span>
@@ -28,3 +31,35 @@
     </div>
   </section>
 </template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import whatsappService from '../../services/whatsappService'
+
+const whatsappUrl = ref('#')
+
+const generateUrl = async () => {
+  try {
+    const message = whatsappService.generateContactMessage()
+    const result = await whatsappService.getWhatsAppLink(message)
+    
+    if (result.success && result.whatsappUrl) {
+      whatsappUrl.value = result.whatsappUrl
+    } else {
+      whatsappUrl.value = whatsappService.generateFallbackWhatsAppLink(message)
+    }
+  } catch (error) {
+    console.error('[WhatsAppSupport] Erreur:', error)
+    const message = whatsappService.generateContactMessage()
+    whatsappUrl.value = whatsappService.generateFallbackWhatsAppLink(message)
+  }
+}
+
+const handleClick = () => {
+  // Le lien s'ouvre déjà dans un nouvel onglet via target="_blank"
+}
+
+onMounted(() => {
+  generateUrl()
+})
+</script>

@@ -1,0 +1,252 @@
+<template>
+  <div class="min-h-screen bg-gradient-to-b from-midnight to-navy pt-24 pb-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Header -->
+      <div class="mb-8">
+        <h1 class="text-3xl md:text-4xl font-serif font-bold text-gold">Votre Panier</h1>
+        <p class="text-slate-400 mt-2">{{ cartItemCount }} article{{ cartItemCount !== 1 ? 's' : '' }} dans votre panier</p>
+      </div>
+
+      <!-- Loading State -->
+      <div v-if="isLoading" class="flex justify-center py-20">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gold"></div>
+      </div>
+
+      <!-- Empty Cart -->
+      <div v-else-if="cartItems.length === 0" class="text-center py-20">
+        <div class="mb-8">
+          <span class="material-symbols-outlined text-8xl text-slate-600">shopping_cart</span>
+        </div>
+        <h2 class="text-2xl font-serif text-slate-300 mb-4">Votre panier est vide</h2>
+        <p class="text-slate-500 mb-8">Découvrez notre collection exclusive de produits de luxe</p>
+        <router-link
+          to="/luxe"
+          class="inline-flex items-center gap-2 px-8 py-3 bg-primary text-midnight font-semibold rounded-lg hover:bg-primary/90 transition-all duration-300"
+        >
+          <span>Découvrir la collection</span>
+          <span class="material-symbols-outlined">arrow_forward</span>
+        </router-link>
+      </div>
+
+      <!-- Cart Content -->
+      <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Cart Items -->
+        <div class="lg:col-span-2 space-y-4">
+          <div
+            v-for="item in cartItems"
+            :key="item.product?._id || item.product?.id || item.product"
+            class="bg-navy/50 backdrop-blur-sm border border-navy/50 rounded-xl p-4 md:p-6"
+          >
+            <div class="flex gap-4 md:gap-6">
+              <!-- Product Image -->
+              <div class="w-24 h-24 md:w-32 md:h-32 flex-shrink-0 rounded-lg overflow-hidden bg-midnight">
+                <img
+                  :src="item.product?.image || 'https://via.placeholder.com/150'"
+                  :alt="item.product?.name || 'Produit'"
+                  class="w-full h-full object-cover"
+                />
+              </div>
+
+              <!-- Product Info -->
+              <div class="flex-1 min-w-0">
+                <div class="flex justify-between items-start gap-4">
+                  <div>
+                    <h3 class="text-lg font-semibold text-slate-200">{{ item.product?.name || 'Produit' }}</h3>
+                    <p class="text-slate-400 text-sm mt-1">{{ item.product?.category || 'Catégorie' }}</p>
+                  </div>
+                  <button
+                    @click="handleRemoveItem(item.product?._id || item.product?.id)"
+                    class="p-2 text-slate-500 hover:text-red-400 transition-colors"
+                    title="Supprimer"
+                  >
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+                </div>
+
+                <!-- Price & Quantity -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mt-4">
+                  <div class="text-primary font-semibold">
+                    {{ formatPrice(item.product?.price || item.price || 0) }}
+                  </div>
+
+                  <!-- Quantity Controls -->
+                  <div class="flex items-center gap-3">
+                    <button
+                      @click="decreaseQuantity(item)"
+                      class="w-8 h-8 rounded-full border border-slate-600 flex items-center justify-center text-slate-400 hover:border-primary hover:text-primary transition-colors"
+                      :disabled="item.quantity <= 1"
+                    >
+                      <span class="material-symbols-outlined text-sm">remove</span>
+                    </button>
+                    <span class="w-12 text-center text-slate-200 font-medium">{{ item.quantity }}</span>
+                    <button
+                      @click="increaseQuantity(item)"
+                      class="w-8 h-8 rounded-full border border-slate-600 flex items-center justify-center text-slate-400 hover:border-primary hover:text-primary transition-colors"
+                    >
+                      <span class="material-symbols-outlined text-sm">add</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Item Total -->
+                <div class="mt-4 pt-4 border-t border-slate-700/50 flex justify-between items-center">
+                  <span class="text-slate-400 text-sm">Sous-total</span>
+                  <span class="text-gold font-semibold text-lg">
+                    {{ formatPrice((item.product?.price || item.price || 0) * item.quantity) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="lg:col-span-1">
+          <div class="bg-navy/50 backdrop-blur-sm border border-navy/50 rounded-xl p-6 sticky top-24">
+            <h2 class="text-xl font-serif font-bold text-gold mb-6">Récapitulatif</h2>
+
+            <div class="space-y-4 pb-6 border-b border-slate-700/50">
+              <div class="flex justify-between text-slate-300">
+                <span>Sous-total ({{ cartItemCount }} article{{ cartItemCount !== 1 ? 's' : '' }})</span>
+                <span>{{ formatPrice(cartTotal) }}</span>
+              </div>
+              <div class="flex justify-between text-slate-300">
+                <span>Livraison</span>
+                <span class="text-green-400">Gratuite</span>
+              </div>
+            </div>
+
+            <div class="py-6">
+              <div class="flex justify-between items-center">
+                <span class="text-xl font-semibold text-slate-200">Total</span>
+                <span class="text-2xl font-bold text-gold">{{ formatPrice(cartTotal) }}</span>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="space-y-3">
+              <router-link
+                to="/checkout"
+                class="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary text-midnight font-semibold rounded-lg hover:bg-primary/90 transition-all duration-300"
+              >
+                <span>Passer la commande</span>
+                <span class="material-symbols-outlined">arrow_forward</span>
+              </router-link>
+
+              <router-link
+                to="/luxe"
+                class="w-full flex items-center justify-center gap-2 px-6 py-3 border border-slate-600 text-slate-300 font-medium rounded-lg hover:border-slate-500 hover:text-white transition-all duration-300"
+              >
+                <span>Continuer les achats</span>
+              </router-link>
+
+              <button
+                @click="handleClearCart"
+                class="w-full px-6 py-3 text-slate-500 hover:text-red-400 transition-colors text-sm"
+              >
+                Vider le panier
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <Transition name="fade">
+      <div
+        v-if="notification.show"
+        class="fixed bottom-6 right-6 px-6 py-4 rounded-lg shadow-xl z-50"
+        :class="notification.type === 'success' ? 'bg-green-600' : 'bg-red-600'"
+      >
+        <p class="text-white font-medium">{{ notification.message }}</p>
+      </div>
+    </Transition>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { useCartStore } from '../stores/cartStore'
+
+const cartStore = useCartStore()
+
+// Computed
+const cartItems = computed(() => cartStore.cartItems)
+const cartItemCount = computed(() => cartStore.cartItemCount)
+const cartTotal = computed(() => cartStore.cartTotal)
+const isLoading = computed(() => cartStore.isLoading)
+
+// Notification state
+const notification = ref({
+  show: false,
+  message: '',
+  type: 'success'
+})
+
+// Show notification
+const showNotification = (message, type = 'success') => {
+  notification.value = { show: true, message, type }
+  setTimeout(() => {
+    notification.value.show = false
+  }, 3000)
+}
+
+// Format price
+const formatPrice = (price) => {
+  return new Intl.NumberFormat('fr-FR', {
+    style: 'currency',
+    currency: 'EUR'
+  }).format(price)
+}
+
+// Increase quantity
+const increaseQuantity = async (item) => {
+  const productId = item.product?._id || item.product?.id || item.product
+  const newQuantity = item.quantity + 1
+  await cartStore.updateQuantity(productId, newQuantity)
+}
+
+// Decrease quantity
+const decreaseQuantity = async (item) => {
+  const productId = item.product?._id || item.product?.id || item.product
+  if (item.quantity > 1) {
+    await cartStore.updateQuantity(productId, item.quantity - 1)
+  }
+}
+
+// Remove item
+const handleRemoveItem = async (productId) => {
+  const result = await cartStore.removeFromCart(productId)
+  if (result.success) {
+    showNotification('Produit supprimé du panier', 'success')
+  } else {
+    showNotification(result.message, 'error')
+  }
+}
+
+// Clear cart
+const handleClearCart = async () => {
+  if (confirm('Êtes-vous sûr de vouloir vider votre panier ?')) {
+    await cartStore.clearCart()
+    showNotification('Panier vidé', 'success')
+  }
+}
+
+// Fetch cart on mount
+onMounted(async () => {
+  await cartStore.fetchCart()
+})
+</script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

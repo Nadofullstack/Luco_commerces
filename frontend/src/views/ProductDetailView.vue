@@ -1,22 +1,119 @@
 <template>
   <div>
-    <HeaderLuxe />
     <main class="pt-32 pb-20">
       <div class="max-w-7xl mx-auto px-6">
-        <!-- Breadcrumbs -->
-        <nav class="flex items-center gap-2 text-sm text-slate-400 mb-8">
-          <router-link class="hover:text-primary transition-colors" to="/">Home</router-link>
-          <span class="material-symbols-outlined text-xs">chevron_right</span>
-          <router-link class="hover:text-primary transition-colors" to="/">Watches</router-link>
-          <span class="material-symbols-outlined text-xs">chevron_right</span>
-          <span class="text-slate-100">{{ product.name }}</span>
-        </nav>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
-          <ProductGalleryLuxe :product="product" />
-          <ProductInfoLuxe :product="product" />
+        <!-- Loading State -->
+        <div v-if="loading" class="flex justify-center py-20">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
-        <ProductFeaturesLuxe :features="product.features" />
-        <RelatedProductsLuxe :product="product" :related="relatedProducts" />
+
+        <!-- Error State -->
+        <div v-else-if="error" class="text-center py-20">
+          <p class="text-red-500 mb-4">{{ error }}</p>
+          <router-link to="/luxe" class="text-primary hover:underline">
+            Retour à la boutique
+          </router-link>
+        </div>
+
+        <!-- Product Details -->
+        <div v-else-if="product">
+          <!-- Breadcrumbs -->
+          <nav class="flex items-center gap-2 text-sm text-slate-400 mb-8">
+            <router-link class="hover:text-primary transition-colors" to="/">Accueil</router-link>
+            <span class="material-symbols-outlined text-xs">chevron_right</span>
+            <router-link class="hover:text-primary transition-colors" to="/luxe">Boutique</router-link>
+            <span class="material-symbols-outlined text-xs">chevron_right</span>
+            <span class="text-slate-100">{{ product.name }}</span>
+          </nav>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+            <!-- Gallery -->
+            <ProductGalleryLuxe :product="product" />
+            
+            <!-- Info -->
+            <div>
+              <h1 class="text-3xl font-bold text-white mb-2">{{ product.name }}</h1>
+              <p class="text-sm text-slate-400 mb-4">SKU: {{ product.sku }}</p>
+              
+              <!-- Price -->
+              <p class="text-4xl font-bold text-primary mb-6">
+                {{ formatPrice(product.price) }}
+              </p>
+              
+              <!-- Description -->
+              <p class="text-slate-300 mb-6">
+                {{ product.description || 'Aucune description disponible.' }}
+              </p>
+              
+              <!-- Category & Status -->
+              <div class="flex gap-4 mb-8">
+                <span class="px-3 py-1 bg-slate-700 rounded-full text-sm text-slate-300">
+                  {{ product.category }}
+                </span>
+                <span :class="getStatusClass(product.status)" class="px-3 py-1 rounded-full text-sm">
+                  {{ product.status }}
+                </span>
+              </div>
+              
+              <!-- Action Buttons -->
+              <div class="flex flex-col gap-4">
+                <!-- Add to Cart -->
+                <button
+                  @click="addToCart"
+                  :disabled="product.status === 'Out of Stock'"
+                  class="w-full py-4 bg-primary text-midnight font-bold rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <span class="flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined">add_shopping_cart</span>
+                    Ajouter au panier
+                  </span>
+                </button>
+                
+                <!-- Commander via WhatsApp -->
+                <a
+                  :href="whatsappOrderUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="w-full py-4 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600 transition-colors text-center"
+                >
+                  <span class="flex items-center justify-center gap-2">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.438 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                    </svg>
+                    Commander sur WhatsApp
+                  </span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Related Products -->
+          <div class="mt-20">
+            <h2 class="text-2xl font-bold text-white mb-8">Produits similaires</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div
+                v-for="related in relatedProducts"
+                :key="related._id"
+                class="bg-slate-800 rounded-lg overflow-hidden hover:transform hover:scale-105 transition-transform"
+              >
+                <router-link :to="`/product/${related._id}`">
+                  <div class="aspect-square overflow-hidden">
+                    <img
+                      :src="related.image"
+                      :alt="related.name"
+                      class="w-full h-full object-cover"
+                      @error="handleImageError"
+                    />
+                  </div>
+                  <div class="p-4">
+                    <h3 class="font-semibold text-white truncate">{{ related.name }}</h3>
+                    <p class="text-primary font-bold mt-1">{{ formatPrice(related.price) }}</p>
+                  </div>
+                </router-link>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
     <FooterLuxe />
@@ -24,65 +121,121 @@
 </template>
 
 <script setup>
-import HeaderLuxe from '../components/luxe/HeaderLuxe.vue'
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import FooterLuxe from '../components/luxe/FooterLuxe.vue'
 import ProductGalleryLuxe from '../components/luxe/ProductGalleryLuxe.vue'
-import ProductInfoLuxe from '../components/luxe/ProductInfoLuxe.vue'
-import ProductFeaturesLuxe from '../components/luxe/ProductFeaturesLuxe.vue'
-import RelatedProductsLuxe from '../components/luxe/RelatedProductsLuxe.vue'
+import whatsappService from '../services/whatsappService'
+import { useCartStore } from '../stores/cartStore'
 
-// simulate data (could fetch by id)
-const product = {
-  id: 1,
-  name: 'Obsidian Chrono - Limited Edition',
-  price: '$1,299',
-  label: 'Limited Edition',
-  description:
-    'A masterpiece of engineering and style, featuring a sapphire crystal face and premium Italian leather strap. Designed for those who appreciate the weight of history on their wrist.',
-  images: [
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuBoNEG-Ei-EwRQEdPyPK5hVa5lyo5PGX8Lcp_h6rnXd7SBq7hE8ZHEyctZYU7ICdBpbTxozIPxwyJRQtiW_6k9K7oYplIihBormF53Blfw_LdK-Xt-4Zz2xfOT7mXVtXoPJYmryp2l_jtFk2siZLLOZx7rmpiLnkaFS2A7r46BQ72DgN2l8wwOJqoISU1LQvcf9KGO0uOpi8YLMZpK5xuR_cbMXfQ58qPkPzldixIz8157n4EDK137N0ZjeGKGUaqiv6i0A5MhWBuq',
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuBD1fa5wLdc7JiAtYlaBE2Q6fXU9qv8ltG4EhyybS2h5PTcM5D3e3k6-hYhC_otTL50CgPqUMJqoocFcZhmo9bgWvr74AEvnVVML_ImhzCYW5KuJhhlQz4L_c5ppRpj8cjKwP4YGVvqJPrmsc8zO9rUiC7kGTaljV8aPvJOA3RVvlY5e7jEcdPeOrG8Q7gq0MOsPuLmiZcX77ojQqPfyBoWQsBoIfrwo3rIT0AEFSfuWNR-v8ISZK4NayB4tbDBXRbf89MfB7ukuLIi',
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuD0uRtEi96QdxoVwJ2aG2fbXinvVyyWjZIkHNZL4LT5okPh9FocS7HHUVP46LJUuuZ_sDSzdMc9O_a0aFg61QqLmm2V73QsjSO9EqrecabeEmQsG-YTuSLfpmmNXDjYxyMWpfVILNIBr_1bI8h6QJUskHCXQw0RYZpn7IwWZygO1t59Y4yQrcyT8v_MT7UZmIbZiF7BTcjDgTCzbf35Okr8aLK1OwoF6EbxYEoESkZzPCJJtJs2mWVnrp8gdZxBPipSC50x9u-RlnyK',
-  ],
-  features: [
-    {
-      icon: 'precision_manufacturing',
-      title: 'Swiss Movement',
-      detail: 'Caliber 5 precision automatic movement',
-    },
-    { icon: 'water_drop', title: 'Water Resistant', detail: 'Up to 100 meters (10 ATM)' },
-    { icon: 'verified', title: '2-Year Warranty', detail: 'International comprehensive coverage' },
-  ],
+const route = useRoute()
+const router = useRouter()
+const cartStore = useCartStore()
+
+const product = ref(null)
+const relatedProducts = ref([])
+const loading = ref(true)
+const error = ref('')
+const whatsappOrderUrl = ref('#')
+
+// Format price in XAF
+const formatPrice = (price) => {
+  return new Intl.NumberFormat('fr-CM', {
+    style: 'currency',
+    currency: 'XAF',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(price)
 }
 
-const relatedProducts = [
-  {
-    id: 2,
-    name: 'Starlight Diver',
-    price: '$950',
-    image:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuD636dMxcEX7DR6lkGKOErNiL8uR4sAa1UB7X3H9DWEQmsFf86HDGlRlm5Z3JqU56efV8LdDeDyWW0vvTqbfC_APV0KF8rjd-JEVTX4PuOwyJBR7orBpMIRT0rNT28Fg2iJrQCKwKxQHass67PLOG99cvBoY7wWBnMbkOdUsdwVcS2X_4T8-l1nk3M0QB7W9-QiNuSDiXDAl5pA5MLqjurmUPrO4En-WmJknvvBKtbJNnHtYIWsAxFWos9cmrh5XeZK7VYmgH3e0y2k',
-  },
-  {
-    id: 3,
-    name: 'Azure Executive',
-    price: '$1,450',
-    image:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuB-kH-dh8oE42Cd1K2ZICkWirSgRHVx-Di9aFyFMkOAUGsClyaLmLNe2kwimFFP4NFa5o-D7qnoJPX1EgMGDEYq_oDwH6wZQKU3f9e9qLKkMzU7Jjo-3LOgaL5ND58OGRNQR3aokLM0HaLHIWMSUUgLJjaip87VXcfZMVWmwFW-dXqTcftANIgUNaWc1bd2orAMpwkuG3cTDE2KUEUILKJ2CP_xmvKw83wfcu8wOv9hNpHB75lUBx7E0kf53cpgdN-9ZBC7Ku4E-jcq',
-  },
-  {
-    id: 4,
-    name: 'Gilded Heritage',
-    price: '$2,100',
-    image:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuCDKZarlwBlpl2_HUAMyNoDlfEImajF8lHX3T0MgD0S8d-gGLtKI4hz_Kw0HEzCyDPFIyP8csqnlMEaVikbFQ7gQCfLcWjuKuMwygpmluXQQXYuX7zYhsW3370c6OpHz1qK-vVcwj_Hmvdxhfn6T-FuU83ayklZk3PTfXQ2a7oq-Us06SEdw0ElZAzN9adQJBEDQZDwd8tAm08EcWjOe3pMXrA_ZGOYhP7SIg5_5dZPF5cTw1xztaDyf4H1e4UysXHhGSTJ1zXRtTiX',
-  },
-  {
-    id: 5,
-    name: 'Stealth Minimalist',
-    price: '$780',
-    image:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuDsgAPQcCZdNW0Y3eS41pnk4hJw4wRu4djX_izi_3-VZaKAPbmziWw_4z8EvoB5y_CCKsJ2vN1tP3tytcBMABkLaB1QQ2LjU5iJ6yV4hB-04TqWu5lm6gbYm6-DYyuaiZXzqNUaOnD5xmM8MdXCYOvF67S1x7NumS8566CN567ABkBSIRT_4KwJQFfIuhwEYIQR1m6x6W9EUThFaj5935vf1-Qr5XHCq4pU6kmCDMSuje059DVdyt58zW1oXedjfcgKPOlCrgCBClZQ',
-  },
-]
+// Get status CSS class
+const getStatusClass = (status) => {
+  const classes = {
+    'In Stock': 'bg-green-500/20 text-green-400',
+    'Low Stock': 'bg-yellow-500/20 text-yellow-400',
+    'Out of Stock': 'bg-red-500/20 text-red-400'
+  }
+  return classes[status] || 'bg-slate-700 text-slate-300'
+}
+
+// Handle image error
+const handleImageError = (e) => {
+  e.target.src = 'https://via.placeholder.com/400'
+}
+
+// Fetch product by ID
+const fetchProduct = async () => {
+  try {
+    loading.value = true
+    error.value = ''
+    
+    const productId = route.params.id
+    
+    // Fetch single product by ID
+    const res = await fetch(`/api/products/public/${productId}`)
+    const data = await res.json()
+    
+    if (!res.ok) {
+      throw new Error(data.error || 'Erreur lors du chargement du produit')
+    }
+    
+    product.value = data.product
+    
+    // Fetch related products (same category)
+    const allRes = await fetch('/api/products/public')
+    const allData = await allRes.json()
+    
+    if (allRes.ok) {
+      relatedProducts.value = (allData.products || [])
+        .filter(p => p._id !== productId && p.category === product.value.category)
+        .slice(0, 4)
+    }
+    
+    // Generate WhatsApp order link
+    generateWhatsAppOrderLink()
+    
+  } catch (err) {
+    error.value = err.message || 'Erreur réseau'
+    console.error('[ProductDetailView] Erreur:', err)
+  } finally {
+    loading.value = false
+  }
+}
+
+// Generate WhatsApp order link
+const generateWhatsAppOrderLink = () => {
+  try {
+    const message = `Bonjour! Je souhaite commander le produit:
+- Nom: ${product.value.name}
+- Prix: ${formatPrice(product.value.price)}
+- SKU: ${product.value.sku}
+
+Merci de me contacter pour finaliser la commande.`
+    
+    const url = whatsappService.generateFallbackWhatsAppLink(message)
+    whatsappOrderUrl.value = url
+  } catch (err) {
+    console.error('[ProductDetailView] Erreur WhatsApp:', err)
+    whatsappOrderUrl.value = '#'
+  }
+}
+
+// Add to cart
+const addToCart = () => {
+  cartStore.addItem({
+    _id: product.value._id,
+    name: product.value.name,
+    price: product.value.price,
+    image: product.value.image,
+    sku: product.value.sku
+  })
+  
+  // Show success message
+  alert('Produit ajouté au panier!')
+}
+
+// Fetch on mount
+onMounted(() => {
+  fetchProduct()
+})
 </script>

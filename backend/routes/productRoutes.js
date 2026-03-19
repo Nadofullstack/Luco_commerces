@@ -5,6 +5,7 @@ const router = express.Router()
 const verifyAdminToken = require('../middleware/authMiddleware')
 const {
   getProducts,
+  getProductById,
   createProduct,
   updateProduct,
   deleteProduct,
@@ -24,11 +25,13 @@ const upload = multer({ storage })
 
 // Public route - no authentication required (for customers)
 router.get('/public', getProducts)
+router.get('/public/:id', getProductById)
 
-// Protected routes - admin only
-router.get('/', verifyAdminToken, getProducts)
+// Protected routes - admin only (order matters: more specific routes first)
+router.get('/:id', verifyAdminToken, getProductById)
 router.post('/', verifyAdminToken, upload.single('image'), createProduct)
 router.put('/:id', verifyAdminToken, upload.single('image'), updateProduct)
 router.delete('/:id', verifyAdminToken, deleteProduct)
+router.get('/', verifyAdminToken, getProducts)
 
 module.exports = router

@@ -62,10 +62,7 @@
         <p v-if="error" class="mt-3 text-sm text-red-300 text-center">{{ error }}</p>
       </transition>
 
-      <div class="mt-5 border-t border-white/10 pt-4 text-center text-slate-300 text-xs">
-        <p class="font-semibold text-slate-200">Identifiants de test :</p>
-        <p class="mt-1">admin@luco.com / password</p>
-      </div>
+     
     </div>
   </div>
 </template>

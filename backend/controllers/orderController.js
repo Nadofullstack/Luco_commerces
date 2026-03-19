@@ -1,4 +1,5 @@
 const Order = require('../models/Order')
+const { sendNewOrderNotification } = require('../services/whatsappService')
 
 // Get all orders
 const getOrders = async (req, res) => {
@@ -46,6 +47,18 @@ const createOrder = async (req, res) => {
     })
     
     const savedOrder = await order.save()
+    
+    // Envoyer la notification WhatsApp à l'admin (ne pas bloquer si erreur)
+    try {
+      const whatsappResult = await sendNewOrderNotification(savedOrder)
+      if (whatsappResult.success) {
+        console.log(`[Order] Notification WhatsApp envoyée pour commande ${savedOrder.orderNumber}`)
+      }
+    } catch (whatsappError) {
+      // Ne pas bloquer la commande en cas d'erreur WhatsApp
+      console.error(`[Order] Erreur notification WhatsApp: ${whatsappError.message}`)
+    }
+    
     res.status(201).json({ order: savedOrder })
   } catch (err) {
     res.status(400).json({ error: err.message })

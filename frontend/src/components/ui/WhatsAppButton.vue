@@ -1,7 +1,10 @@
 <template>
   <a
-    class="fixed bottom-8 right-8 w-16 h-16 bg-primary text-midnight rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform z-50"
-    href="#"
+    class="fixed bottom-8 right-8 w-16 h-16 bg-primary text-midnight rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform z-50 cursor-pointer"
+    :href="whatsappUrl"
+    target="_blank"
+    rel="noopener noreferrer"
+    @click.prevent="handleClick"
   >
     <svg
       class="w-10 h-10"
@@ -15,3 +18,58 @@
     </svg>
   </a>
 </template>
+
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import whatsappService from '../../services/whatsappService'
+
+const props = defineProps({
+  message: {
+    type: String,
+    default: ''
+  },
+  product: {
+    type: Object,
+    default: null
+  }
+})
+
+const whatsappUrl = ref('#')
+
+const generateUrl = async () => {
+  try {
+    let message = props.message
+    let productName = ''
+    
+    // Si un produit est passé, générer un message de demande
+    if (props.product && !message) {
+      message = whatsappService.generateProductInquiry(props.product)
+      productName = props.product.name
+    } else if (!message) {
+      message = whatsappService.generateContactMessage()
+    }
+
+    const result = await whatsappService.getWhatsAppLink(message, productName)
+    
+    if (result.success && result.whatsappUrl) {
+      whatsappUrl.value = result.whatsappUrl
+    } else {
+      // Fallback
+      whatsappUrl.value = whatsappService.generateFallbackWhatsAppLink(message)
+    }
+  } catch (error) {
+    console.error('[WhatsAppButton] Erreur:', error)
+    whatsappUrl.value = whatsappService.generateFallbackWhatsAppLink(
+      props.message || whatsappService.generateContactMessage()
+    )
+  }
+}
+
+const handleClick = () => {
+  // Le lien s'ouvre déjà dans un nouvel onglet via target="_blank"
+}
+
+onMounted(() => {
+  generateUrl()
+})
+</script>

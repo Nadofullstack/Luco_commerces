@@ -20,7 +20,8 @@
             <option value="all">All Categories</option>
             <option value="Electronics">Electronics</option>
             <option value="Fashion">Fashion</option>
-            <option value="Home Decor">Home Decor</option>
+            <option value="Home Decor">Beauty</option>
+            <option value="Accessoire">Accessoire</option>
           </select>
         </div>
         <button class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white">
@@ -270,7 +271,7 @@ const emit = defineEmits(['edit', 'delete', 'page-change', 'filter-change'])
 // État local
 const selectedCategory = ref('all')
 const currentPage = ref(1)
-const itemsPerPage = 4
+const itemsPerPage = 10
 
 // Computed pour les produits filtrés
 const filteredProducts = computed(() => {
@@ -338,6 +339,13 @@ watch(selectedCategory, (newValue) => {
   emit('filter-change', newValue)
   currentPage.value = 1
 })
+
+// Watcher pour synchroniser la page avec la pagination du backend
+watch(() => props.pagination, (newPagination) => {
+  if (newPagination && newPagination.page) {
+    currentPage.value = newPagination.page
+  }
+}, { immediate: true })
 </script>
 
 <style scoped>

@@ -9,8 +9,10 @@ const adminRoutes = require('./routes/adminRoutes')
 const productRoutes = require('./routes/productRoutes')
 const orderRoutes = require('./routes/orderRoutes')
 const customerRoutes = require('./routes/customerRoutes')
+const contactRoutes = require('./routes/contactRoutes')
+const cartRoutes = require('./routes/cartRoutes')
 const { createDefaultAdmin } = require('./controllers/authController')
-const { createDefaultProducts } = require('./controllers/productController')
+// const { createDefaultProducts } = require('./controllers/productController')
 
 const PORT = process.env.PORT || 3000
 //création d'une instance de express
@@ -28,6 +30,8 @@ app.use('/api/admin', adminRoutes)
 app.use('/api/products', productRoutes)
 app.use('/api/orders', orderRoutes)
 app.use('/api/customers', customerRoutes)
+app.use('/api/contact', contactRoutes)
+app.use('/api/cart', cartRoutes)
 app.use('/uploads', express.static('uploads'))
 
 app.get('/', (req, res) => {
@@ -39,7 +43,7 @@ const startServer = async () => {
   try {
     await connectDB()
     await createDefaultAdmin()
-    await createDefaultProducts()
+    // await createDefaultProducts()
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`)
     })

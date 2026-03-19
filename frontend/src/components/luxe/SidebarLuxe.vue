@@ -47,21 +47,7 @@
         </label>
       </div>
     </div>
-    <div class="space-y-6">
-      <div class="flex justify-between items-center">
-        <h4 class="text-sm font-medium text-slate-200">Price Range</h4>
-        <span class="text-xs text-primary font-mono">$500 - $5,000</span>
-      </div>
-      <div class="relative h-1 bg-navy rounded-full">
-        <div class="absolute inset-y-0 left-1/4 right-1/4 bg-primary rounded-full"></div>
-        <div
-          class="absolute top-1/2 left-1/4 -translate-y-1/2 -translate-x-1/2 w-4 h-4 bg-white border-2 border-primary rounded-full shadow-lg cursor-pointer"
-        ></div>
-        <div
-          class="absolute top-1/2 right-1/4 -translate-y-1/2 translate-x-1/2 w-4 h-4 bg-white border-2 border-primary rounded-full shadow-lg cursor-pointer"
-        ></div>
-      </div>
-    </div>
+  
     <div class="pt-6 border-t border-white/5">
       <h4 class="text-sm font-medium text-slate-200 mb-4">Availability</h4>
       <div class="space-y-3">

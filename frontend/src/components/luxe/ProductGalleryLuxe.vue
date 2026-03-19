@@ -1,21 +1,19 @@
 <template>
   <div class="flex flex-col gap-6">
+    <!-- Main Image -->
     <div class="aspect-[4/5] bg-navy rounded-2xl overflow-hidden relative group">
       <img
         :src="activeImage"
         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         :alt="product.name"
+        @error="handleImageError"
       />
-      <div v-if="product.label" class="absolute top-6 right-6">
-        <span
-          class="bg-primary/20 backdrop-blur-md text-primary text-xs font-bold px-3 py-1 rounded-full border border-primary/30 uppercase tracking-widest"
-          >{{ product.label }}</span
-        >
-      </div>
     </div>
-    <div class="grid grid-cols-4 gap-4">
+    
+    <!-- Thumbnail Images -->
+    <div v-if="productImages.length > 1" class="grid grid-cols-4 gap-4">
       <button
-        v-for="(img, idx) in product.images"
+        v-for="(img, idx) in productImages"
         :key="idx"
         @click="activeImage = img"
         :class="[
@@ -27,6 +25,7 @@
           :src="img"
           class="w-full h-full object-cover"
           :alt="`${product.name} thumbnail ${idx + 1}`"
+          @error="handleImageError"
         />
       </button>
     </div>
@@ -34,9 +33,33 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, watch } from 'vue'
+
 const props = defineProps({
   product: { type: Object, required: true },
 })
-const activeImage = ref(props.product.images[0])
+
+// Handle both array of images and single image
+const productImages = computed(() => {
+  if (props.product.images && Array.isArray(props.product.images)) {
+    return props.product.images
+  }
+  if (props.product.image) {
+    return [props.product.image]
+  }
+  return ['https://via.placeholder.com/400']
+})
+
+// Use first image as default
+const activeImage = ref(productImages.value[0])
+
+// Watch for product changes
+watch(() => props.product, () => {
+  activeImage.value = productImages.value[0]
+}, { immediate: true })
+
+// Handle image error
+const handleImageError = (e) => {
+  e.target.src = 'https://via.placeholder.com/400'
+}
 </script>

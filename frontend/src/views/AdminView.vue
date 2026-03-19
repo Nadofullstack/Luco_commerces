@@ -57,7 +57,7 @@
         <!-- Main Grid Layout -->
         <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
           <div class="xl:col-span-2">
-            <ProductsTable :products="filteredProducts" :pagination="pagination" @edit="editProduct" @delete="deleteProduct" />
+            <ProductsTable :products="filteredProducts" :pagination="pagination" @edit="editProduct" @delete="deleteProduct" @page-change="handlePageChange" />
           </div>
 
           <div class="space-y-6 xl:col-span-1">
@@ -160,6 +160,8 @@ const products = ref([])
 const isLoading = ref(false)
 const error = ref('')
 const sidebarCollapsed = ref(false)
+const currentPage = ref(1)
+const paginationInfo = ref({ page: 1, limit: 10, total: 0, totalPages: 0, from: 1, to: 10 })
 const sidebarOpen = ref(false)
 
 const handleSidebarToggle = (type) => {
@@ -311,17 +313,19 @@ const stats = ref([
   { icon: 'block', title: 'Out of Stock', value: '0', change: '-0%', iconClass: 'bg-red-500/10 flex items-center justify-center text-red-500', changeClass: 'text-red-500 text-xs font-bold bg-red-500/10 px-2 py-1 rounded-lg' },
 ])
 
-const fetchProducts = async () => {
+const fetchProducts = async (page = 1) => {
   try {
     isLoading.value = true
     const token = localStorage.getItem('adminToken')
-    const res = await fetch('/api/products', { headers: { Authorization: `Bearer ${token}` } })
+    const res = await fetch(`/api/products?page=${page}&limit=10`, { headers: { Authorization: `Bearer ${token}` } })
     const data = await res.json()
     isLoading.value = false
     if (!res.ok) {
       throw new Error(data.error || 'Impossible de charger les produits')
     }
     products.value = data.products
+    paginationInfo.value = data.pagination
+    currentPage.value = page
     updateStats()
   } catch (err) {
     isLoading.value = false
@@ -388,13 +392,13 @@ const filteredProducts = computed(() => {
   return list
 })
 
+// Handle page change from ProductsTable component
+const handlePageChange = (page) => {
+  fetchProducts(page)
+}
+
 const pagination = computed(() => {
-  const total = products.value.length
-  return {
-    from: 1,
-    to: Math.min(10, total),
-    total: total
-  }
+  return paginationInfo.value
 })
 
 </script>

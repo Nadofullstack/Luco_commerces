@@ -2,25 +2,66 @@ const Product = require('../models/Product')
 
 exports.getProducts = async (req, res) => {
   try {
-    const products = await Product.find().sort({ createdAt: -1 })
-    res.json({ success: true, products })
+    // Pagination parameters
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 10
+    const skip = (page - 1) * limit
+
+    // Get total count
+    const total = await Product.countDocuments()
+
+    // Get paginated products
+    const products = await Product.find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+
+    res.json({
+      success: true,
+      products,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+        from: skip + 1,
+        to: Math.min(skip + limit, total)
+      }
+    })
+  
   } catch (error) {
     res.status(500).json({ error: 'Erreur serveur lors de la récupération des produits.' })
   }
 }
 
-exports.createDefaultProducts = async () => {
-  const count = await Product.countDocuments()
-  if (count > 0) return
-
-  const sample = [
-    { name: 'Luxe Horizon Watch', sku: 'LUX-001', category: 'Accessories', price: 249, status: 'In Stock', image: 'https://via.placeholder.com/80', description: 'Premium watch.' },
-    { name: 'Aura Wireless Pods', sku: 'LUX-002', category: 'Electronics', price: 399, status: 'Low Stock', image: 'https://via.placeholder.com/80', description: 'Noise-cancelling earbuds.' },
-    { name: 'Velvet Essence Serum', sku: 'LUX-003', category: 'Beauty', price: 85, status: 'Out of Stock', image: 'https://via.placeholder.com/80', description: 'Hydrating skin serum.' },
-  ]
-
-  await Product.insertMany(sample)
+// Get single product by ID (public)
+exports.getProductById = async (req, res) => {
+  try {
+    const { id } = req.params
+    const product = await Product.findById(id)
+    
+    if (!product) {
+      return res.status(404).json({ error: 'Produit non trouvé.' })
+    }
+    
+    res.json({ success: true, product })
+  } catch (error) {
+    res.status(500).json({ error: 'Erreur serveur lors de la récupération du produit.' })
+  }
 }
+
+// exports.createDefaultProducts = async () => {
+//   const count = await Product.countDocuments()
+//   if (count > 0) return
+
+//   const sample = [
+//     { name: 'Luxe Horizon Watch', sku: 'LUX-001', category: 'Accessories', price: 249, status: 'In Stock', image: 'https://via.placeholder.com/80', description: 'Premium watch.' },
+//     { name: 'Aura Wireless Pods', sku: 'LUX-002', category: 'Electronics', price: 399, status: 'Low Stock', image: 'https://via.placeholder.com/80', description: 'Noise-cancelling earbuds.' },
+//     { name: 'Velvet Essence Serum', sku: 'LUX-003', category: 'Beauty', price: 85, status: 'Out of Stock', image: 'https://via.placeholder.com/80', description: 'Hydrating skin serum.' },
+//   ]
+
+//   await Product.insertMany(sample)
+// }
 
 exports.createProduct = async (req, res) => {
   try {
