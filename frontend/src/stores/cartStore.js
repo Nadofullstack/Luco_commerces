@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 
-const API_URL = 'http://localhost:3000/api'
+const API_URL = '/api'
 
 export const useCartStore = defineStore('cart', () => {
   // State

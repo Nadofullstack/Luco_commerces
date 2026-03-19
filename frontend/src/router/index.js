@@ -7,6 +7,7 @@ import CheckoutView from '../views/CheckoutView.vue'
 
 const routes = [
   { path: '/', name: 'home', component: HomeView },
+  { path: '/luxe', name: 'luxe', component: () => import('../views/LuxeView.vue') },
   { path: '/product/:id', name: 'product', component: ProductDetailView },
   { path: '/contact', name: 'contact', component: ContactView },
   { path: '/panier', name: 'cart', component: CartView },

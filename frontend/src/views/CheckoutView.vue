@@ -319,7 +319,7 @@ const cartTotal = computed(() => cartStore.cartTotal)
 const isLoading = computed(() => cartStore.isLoading)
 
 // API URL
-const API_URL = 'http://localhost:3000/api'
+const API_URL = '/api'
 
 // Form state
 const form = ref({

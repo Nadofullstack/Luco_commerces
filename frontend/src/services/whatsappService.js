@@ -3,7 +3,7 @@
  * Gère les interactions avec l'API backend pour générer des liens WhatsApp
  */
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+const API_URL = import.meta.env.VITE_API_URL || '/api'
 
 /**
  * Appelle l'API backend pour générer un lien WhatsApp

@@ -60,7 +60,7 @@ const notification = ref({
   type: 'success'
 })
 
-const API_URL = 'http://localhost:3000/api'
+const API_URL = '/api'
 
 // Fetch products from API
 const fetchProducts = async () => {
