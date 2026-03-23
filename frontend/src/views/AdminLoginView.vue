@@ -44,7 +44,6 @@
             <input type="checkbox" v-model="remember" class="h-4 w-4 accent-primary rounded" />
             Se souvenir de moi
           </label>
-          <router-link class="text-primary hover:text-gold transition-colors" to="/contact">Besoin d'aide ?</router-link>
         </div>
 
         <button

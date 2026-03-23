@@ -1,7 +1,5 @@
 <template>
   <div>
-    <Navbar />
-
     <HeroSection
       @primaryClick="onHeroPrimary"
       @secondaryClick="onHeroSecondary"
@@ -36,7 +34,6 @@
 
     <CTABanner @contact="onContact" />
 
-    <Footer />
     <WhatsAppButton />
   </div>
 </template>
@@ -44,13 +41,11 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import Navbar from '../components/layout/Navbar.vue'
 import HeroSection from '../components/home/HeroSection.vue'
 import BenefitsSection from '../components/home/BenefitsSection.vue'
 import CategoriesSection from '../components/home/CategoriesSection.vue'
 import FeaturedProducts from '../components/home/FeaturedProducts.vue'
 import CTABanner from '../components/home/CTABanner.vue'
-import Footer from '../components/layout/Footer.vue'
 import WhatsAppButton from '../components/ui/WhatsAppButton.vue'
 
 const router = useRouter()

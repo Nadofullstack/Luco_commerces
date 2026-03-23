@@ -46,37 +46,10 @@
         <span class="material-symbols-outlined" :class="item.iconBold ? 'font-bold' : ''">{{ item.icon }}</span>
         <span v-if="!isCollapsed" :class="item.highlight ? 'font-bold text-sm' : 'font-medium text-sm'">{{ item.name }}</span>
       </router-link>
-      <div v-if="!isCollapsed" class="pt-4 pb-2 px-4">
-        <p class="text-[10px] uppercase text-slate-500 font-bold tracking-widest">System</p>
-      </div>
-      <router-link
-        to="/admin/settings"
-        @click="handleLinkClick"
-        class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
-        :class="isCollapsed ? 'justify-center' : ''"
-      >
-        <span class="material-symbols-outlined">settings</span>
-        <span v-if="!isCollapsed" class="font-medium text-sm">Settings</span>
-      </router-link>
-      <router-link
-        to="/admin/support"
-        @click="handleLinkClick"
-        class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
-        :class="isCollapsed ? 'justify-center' : ''"
-      >
-        <span class="material-symbols-outlined">help</span>
-        <span v-if="!isCollapsed" class="font-medium text-sm">Support</span>
-      </router-link>
+      
+     
     </nav>
-     <div v-if="!isCollapsed" class="p-4 mt-auto">
-      <div class="bg-slate-800/50 rounded-2xl p-4 border border-slate-700">
-        <p class="text-xs text-slate-400 mb-2">Storage Usage</p>
-        <div class="w-full bg-slate-700 h-1.5 rounded-full overflow-hidden">
-          <div class="bg-primary h-full w-[72%]"></div>
-        </div>
-        <p class="text-[10px] text-slate-500 mt-2 text-right">72% of 10GB</p>
-      </div> 
-    </div>
+    
   </aside>
 </template>
 

@@ -65,9 +65,18 @@
                 >
                   <span class="flex items-center justify-center gap-2">
                     <span class="material-symbols-outlined">add_shopping_cart</span>
-                    Ajouter au panier
+                    {{ addedToCart ? 'Ajouté!' : 'Ajouter au panier' }}
                   </span>
                 </button>
+                
+                <!-- Voir le panier -->
+                <router-link
+                  to="/panier"
+                  class="w-full py-3 border border-primary text-primary rounded-lg font-medium hover:bg-primary/10 transition-all flex items-center justify-center gap-2"
+                >
+                  <span class="material-symbols-outlined">shopping_cart</span>
+                  Voir le panier ({{ cartItemCount }})
+                </router-link>
                 
                 <!-- Commander via WhatsApp -->
                 <a
@@ -121,7 +130,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import FooterLuxe from '../components/luxe/FooterLuxe.vue'
 import ProductGalleryLuxe from '../components/luxe/ProductGalleryLuxe.vue'
@@ -137,6 +146,8 @@ const relatedProducts = ref([])
 const loading = ref(true)
 const error = ref('')
 const whatsappOrderUrl = ref('#')
+const addedToCart = ref(false)
+const cartItemCount = computed(() => cartStore.cartItemCount)
 
 // Format price in XAF
 const formatPrice = (price) => {
@@ -222,7 +233,7 @@ Merci de me contacter pour finaliser la commande.`
 
 // Add to cart
 const addToCart = () => {
-  cartStore.addItem({
+  cartStore.addToCart({
     _id: product.value._id,
     name: product.value.name,
     price: product.value.price,
@@ -230,8 +241,11 @@ const addToCart = () => {
     sku: product.value.sku
   })
   
-  // Show success message
-  alert('Produit ajouté au panier!')
+  // Show success feedback
+  addedToCart.value = true
+  setTimeout(() => {
+    addedToCart.value = false
+  }, 2000)
 }
 
 // Fetch on mount

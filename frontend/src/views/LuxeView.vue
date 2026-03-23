@@ -1,6 +1,5 @@
 <template>
   <div class="min-h-screen bg-midnight">
-    <HeaderLuxe />
     
     <main class="pt-24 pb-16">
       <div class="max-w-7xl mx-auto px-6">
@@ -24,7 +23,6 @@
 </template>
 
 <script setup>
-import HeaderLuxe from '../components/luxe/HeaderLuxe.vue'
 import FooterLuxe from '../components/luxe/FooterLuxe.vue'
 import ProductGridLuxe from '../components/luxe/ProductGridLuxe.vue'
 </script>

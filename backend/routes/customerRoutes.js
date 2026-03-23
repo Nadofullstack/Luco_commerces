@@ -1,14 +1,15 @@
 const express = require('express')
 const router = express.Router()
 const { getCustomers, getCustomerById, createCustomer, loginCustomer, updateCustomer, deleteCustomer, getCustomerOrders } = require('../controllers/customerController')
-const auth = require('../middleware/authMiddleware')
+const verifyAdminToken = require('../middleware/authMiddleware')
+const verifyCustomerToken = require('../middleware/customerAuthMiddleware')
 
-// Public routes
+// Public routes (anyone can register/login)
 router.post('/register', createCustomer)
 router.post('/login', loginCustomer)
 
-// Protected routes (require authentication)
-router.use(auth)
+// Protected routes (require admin authentication)
+router.use(verifyAdminToken)
 
 // Admin routes
 router.get('/', getCustomers)

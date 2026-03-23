@@ -20,16 +20,8 @@
     <div class="p-6 flex flex-col grow">
       <div class="flex justify-between items-start mb-2">
         <h3 class="text-lg font-bold">{{ product.name }}</h3>
-        <span class="text-gold font-bold">{{ product.price }}</span>
       </div>
-      <p class="text-slate-400 text-sm mb-6 grow">{{ product.description }}</p>
-      <button
-        class="w-full py-3 bg-primary/10 border border-primary text-primary rounded-xl font-bold hover:bg-primary hover:text-midnight transition-all flex items-center justify-center gap-2"
-        @click="handleOrder"
-      >
-        <span class="material-symbols-outlined text-lg">chat</span>
-           Ajouter
-       </button>
+     
     </div>
   </div>
 </template>
@@ -42,9 +34,7 @@ const props = defineProps({
   },
 })
 const emit = defineEmits(['order','select'])
-function handleOrder() {
-  emit('order', props.product)
-}
+
 function handleSelect() {
   emit('select', props.product)
 }

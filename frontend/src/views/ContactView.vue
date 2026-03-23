@@ -1,6 +1,5 @@
 <template>
   <div>
-    <HeaderLuxe />
     <main>
       <ContactHero />
       <WhatsAppSupport />
@@ -20,7 +19,6 @@
 </template>
 
 <script setup>
-import HeaderLuxe from '../components/luxe/HeaderLuxe.vue'
 import FooterLuxe from '../components/luxe/FooterLuxe.vue'
 import ContactHero from '../components/luxe/ContactHero.vue'
 import WhatsAppSupport from '../components/luxe/WhatsAppSupport.vue'

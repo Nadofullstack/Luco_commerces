@@ -13,7 +13,7 @@ const routes = [
   { path: '/panier', name: 'cart', component: CartView },
   { path: '/checkout', name: 'checkout', component: CheckoutView },
   
-  // Admin Routes
+  // Admin Routes (protégées)
   {
     path: '/admin',
     name: 'admin',
@@ -50,7 +50,12 @@ const routes = [
     component: () => import('../views/AdminView.vue'),
     meta: { requiresAdmin: true },
   },
-  { path: '/admin/login', name: 'admin-login', component: () => import('../views/AdminLoginView.vue') },
+  { 
+    path: '/admin/login', 
+    name: 'admin-login', 
+    component: () => import('../views/AdminLoginView.vue'),
+    meta: { hideForAdmin: true }
+  },
 ]
 
 const router = createRouter({
@@ -58,16 +63,41 @@ const router = createRouter({
   routes,
 })
 
+// Guard pour protéger les routes admin
 router.beforeEach((to, from, next) => {
   const requiresAdmin = to.meta.requiresAdmin
+  const hideForAdmin = to.meta.hideForAdmin
   const adminToken = localStorage.getItem('adminToken')
+  
+  // Vérifier si le token a expiré (optionnel: peut être implémenté avec jwt decode)
+  if (adminToken) {
+    try {
+      // Vérifier la validité basique du token
+      const tokenParts = adminToken.split('.')
+      if (tokenParts.length !== 3) {
+        // Token invalide, le supprimer
+        localStorage.removeItem('adminToken')
+        localStorage.removeItem('adminUser')
+        if (requiresAdmin) {
+          return next({ name: 'admin-login' })
+        }
+      }
+    } catch (e) {
+      localStorage.removeItem('adminToken')
+      localStorage.removeItem('adminUser')
+      if (requiresAdmin) {
+        return next({ name: 'admin-login' })
+      }
+    }
+  }
 
   // Protection routes admin
   if (requiresAdmin && !adminToken) {
     return next({ name: 'admin-login' })
   }
 
-  if (to.name === 'admin-login' && adminToken) {
+  // Si déjà connecté, rediriger depuis la page login
+  if (hideForAdmin && adminToken) {
     return next({ name: 'admin-products' })
   }
 

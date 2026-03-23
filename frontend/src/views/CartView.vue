@@ -173,6 +173,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useCartStore } from '../stores/cartStore'
+import whatsappService from '../services/whatsappService'
 
 const cartStore = useCartStore()
 
@@ -184,8 +185,6 @@ const isLoading = computed(() => cartStore.isLoading)
 
 // Generate WhatsApp order link
 const whatsappOrderUrl = computed(() => {
-  const adminPhone = '+2290140487428'
-  
   // Build the message with cart items
   let message = 'Bonjour! Je souhaite commander les produits suivants:\n\n'
   
@@ -200,9 +199,8 @@ const whatsappOrderUrl = computed(() => {
   message += `\nTotal: ${formatPrice(cartTotal.value)}`
   message += '\n\nMerci de me contacter pour finaliser la commande.'
   
-  // Encode the message for WhatsApp URL
-  const encodedMessage = encodeURIComponent(message)
-  return `https://wa.me/${adminPhone.replace(/[^0-9]/g, '')}?text=${encodedMessage}`
+  // Use the WhatsApp service to generate the link
+  return whatsappService.generateFallbackWhatsAppLink(message)
 })
 
 // Notification state

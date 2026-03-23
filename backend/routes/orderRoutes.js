@@ -1,10 +1,10 @@
 const express = require('express')
 const router = express.Router()
 const { getOrders, getOrderById, createOrder, updateOrder, deleteOrder } = require('../controllers/orderController')
-const auth = require('../middleware/authMiddleware')
+const verifyAdminToken = require('../middleware/authMiddleware')
 
-// All routes require authentication
-router.use(auth)
+// All routes require admin authentication
+router.use(verifyAdminToken)
 
 // Routes
 router.get('/', getOrders)

@@ -26,12 +26,13 @@
             >
           </router-link>
 
-          <!-- Admin Link (hidden by default) -->
+          <!-- Admin Link (only visible if logged in as admin) -->
           <router-link
-            to="/admin/login"
+            v-if="isAdminLoggedIn"
+            to="/admin/products"
             class="text-sm font-medium text-slate-200 hover:text-gold transition-colors"
           >
-            Admin
+            Dashboard
           </router-link>
 
           <button class="md:hidden text-slate-200" @click="mobileOpen = !mobileOpen">
@@ -48,7 +49,14 @@
         <router-link class="block text-slate-200 hover:text-gold" :to="{ path: '/', hash: 'products' }" @click="mobileOpen = false">Produits</router-link>
         <router-link class="block text-slate-200 hover:text-primary" to="/contact" @click="mobileOpen = false">Contact</router-link>
         <router-link class="block text-slate-200 hover:text-primary" to="/panier" @click="mobileOpen = false">Panier ({{ cartItemCount }})</router-link>
-        <router-link class="block text-slate-200 hover:text-gold" to="/admin/login" @click="mobileOpen = false">Admin</router-link>
+        <router-link 
+          v-if="isAdminLoggedIn" 
+          class="block text-slate-200 hover:text-gold" 
+          to="/admin/products" 
+          @click="mobileOpen = false"
+        >
+          Dashboard
+        </router-link>
       </div>
     </div>
   </nav>
@@ -64,6 +72,7 @@ const mobileOpen = ref(false)
 
 // Computed
 const cartItemCount = computed(() => cartStore.cartItemCount)
+const isAdminLoggedIn = computed(() => !!localStorage.getItem('adminToken'))
 
 onMounted(async () => {
   await cartStore.fetchCart()

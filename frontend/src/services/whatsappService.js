@@ -94,7 +94,7 @@ const openWhatsApp = async (message = '', product = '', customer = '') => {
  */
 const generateFallbackWhatsAppLink = (message) => {
   // Numéro par défaut ( fallback ) - peut être configuré via les variables d'environnement
-  const defaultPhone = import.meta.env.VITE_WHATSAPP_NUMBER || '22967475658'
+  const defaultPhone = import.meta.env.VITE_WHATSAPP_NUMBER || '2290140487428'
   const encodedMessage = encodeURIComponent(message || 'Bonjour, je souhaite obtenir des informations sur vos produits.')
   return `https://wa.me/${defaultPhone}?text=${encodedMessage}`
 }
