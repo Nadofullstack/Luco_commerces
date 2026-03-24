@@ -41,19 +41,25 @@ app.get('/', (req, res) => {
 // Connect to MongoDB and start the server
 const startServer = async () => {
   try {
-    await connectDB().catch(err => {
-     console.log("MongoDB error:", err.message)
-     process.exit(1)
+    await connectDB()
+
+    console.log("MongoDB connecté")
+
+    await createDefaultAdmin().catch(err => {
+      console.log("Admin skipped:", err.message)
     })
-    await createDefaultAdmin()
-    // await createDefaultProducts()
-    app.listen(PORT, () => {
+
+    app.listen(PORT, "0.0.0.0", () => {
       console.log(`Server running on port ${PORT}`)
     })
+
   } catch (error) {
-    console.error('Error connecting to MongoDB:', error.message)
-    process.exit(1)
+    console.error("DB connection failed:", error.message)
+
+    // ⚠️ IMPORTANT : on ne crash PAS Render
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Server running WITHOUT DB on port ${PORT}`)
+    })
   }
 }
-
 startServer()
