@@ -17,12 +17,8 @@
         <ProductGridLuxe />
       </div>
     </main>
-
-    <FooterLuxe />
   </div>
 </template>
-
 <script setup>
-import FooterLuxe from '../components/luxe/FooterLuxe.vue'
 import ProductGridLuxe from '../components/luxe/ProductGridLuxe.vue'
 </script>

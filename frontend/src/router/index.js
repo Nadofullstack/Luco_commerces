@@ -63,8 +63,8 @@ const router = createRouter({
   routes,
 })
 
-// Guard pour protéger les routes admin
-router.beforeEach((to, from, next) => {
+// Guard pour protéger les routes admin (nouvelle syntaxe Vue Router 4)
+router.beforeEach((to, from) => {
   const requiresAdmin = to.meta.requiresAdmin
   const hideForAdmin = to.meta.hideForAdmin
   const adminToken = localStorage.getItem('adminToken')
@@ -79,29 +79,30 @@ router.beforeEach((to, from, next) => {
         localStorage.removeItem('adminToken')
         localStorage.removeItem('adminUser')
         if (requiresAdmin) {
-          return next({ name: 'admin-login' })
+          return { name: 'admin-login' }
         }
       }
     } catch (e) {
       localStorage.removeItem('adminToken')
       localStorage.removeItem('adminUser')
       if (requiresAdmin) {
-        return next({ name: 'admin-login' })
+        return { name: 'admin-login' }
       }
     }
   }
 
   // Protection routes admin
   if (requiresAdmin && !adminToken) {
-    return next({ name: 'admin-login' })
+    return { name: 'admin-login' }
   }
 
   // Si déjà connecté, rediriger depuis la page login
   if (hideForAdmin && adminToken) {
-    return next({ name: 'admin-products' })
+    return { name: 'admin-products' }
   }
 
-  next()
+  // Autoriser la navigation
+  return true
 })
 
 export default router

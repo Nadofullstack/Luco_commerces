@@ -14,12 +14,10 @@
         </div>
       </section>
     </main>
-    <FooterLuxe />
   </div>
 </template>
 
 <script setup>
-import FooterLuxe from '../components/luxe/FooterLuxe.vue'
 import ContactHero from '../components/luxe/ContactHero.vue'
 import WhatsAppSupport from '../components/luxe/WhatsAppSupport.vue'
 import ContactForm from '../components/luxe/ContactForm.vue'

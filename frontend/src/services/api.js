@@ -3,7 +3,7 @@
  * Gère automatiquement l'authentification et les erreurs
  */
 
-const API_URL = '/api'
+const API_URL = import.meta.env.VITE_API_URL || '/api'
 
 /**
  * Récupère le token admin depuis le localStorage

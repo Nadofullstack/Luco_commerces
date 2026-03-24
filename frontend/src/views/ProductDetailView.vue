@@ -125,14 +125,12 @@
         </div>
       </div>
     </main>
-    <FooterLuxe />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import FooterLuxe from '../components/luxe/FooterLuxe.vue'
 import ProductGalleryLuxe from '../components/luxe/ProductGalleryLuxe.vue'
 import whatsappService from '../services/whatsappService'
 import { useCartStore } from '../stores/cartStore'
