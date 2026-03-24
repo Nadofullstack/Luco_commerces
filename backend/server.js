@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 3000
 const app = express()
 //cores
 app.use(cors({
-    origin:'http://localhost:5173',
+    origin: process.env.FRONTEND_URL || '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }))
@@ -41,7 +41,10 @@ app.get('/', (req, res) => {
 // Connect to MongoDB and start the server
 const startServer = async () => {
   try {
-    await connectDB()
+    await connectDB().catch(err => {
+     console.log("MongoDB error:", err.message)
+     process.exit(1)
+    })
     await createDefaultAdmin()
     // await createDefaultProducts()
     app.listen(PORT, () => {
