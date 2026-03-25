@@ -90,7 +90,8 @@ const fetchProducts = async () => {
   try {
     isLoading.value = true
     error.value = ''
-    const res = await fetch('/api/products/public')
+    const API_URL = import.meta.env.VITE_API_URL || '/api'
+    const res = await fetch(`${API_URL}/products/public`)
     const data = await res.json()
     
     if (!res.ok) {

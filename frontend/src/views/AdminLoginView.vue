@@ -69,6 +69,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { getApiUrl } from '../utils/api'
 
 const router = useRouter()
 const email = ref('')
@@ -82,7 +83,7 @@ const onSubmit = async () => {
   loading.value = true
 
   try {
-    const response = await fetch('/api/admin/login', {
+    const response = await fetch(getApiUrl('/admin/login'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: email.value, password: password.value }),

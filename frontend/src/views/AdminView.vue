@@ -154,6 +154,7 @@ import StatsCard from '../components/admin/StatsCard.vue'
 import ProductsTable from '../components/admin/ProductsTable.vue'
 
 import { ref, computed, onMounted } from 'vue'
+import { getApiUrl } from '../utils/api'
 
 const searchQuery = ref('')
 const products = ref([])
@@ -279,7 +280,7 @@ const submitProductForm = async () => {
 
     if (isEditMode.value) {
       // Update existing product
-      res = await fetch(`/api/products/${editingProductId.value}`, {
+      res = await fetch(getApiUrl(`/products/${editingProductId.value}`), {
         method: 'PUT',
         headers: { Authorization: `Bearer ${token}` },
         body: form,
@@ -290,7 +291,7 @@ const submitProductForm = async () => {
       if (idx > -1) products.value[idx] = data.product
     } else {
       // Create new product
-      res = await fetch('/api/products', {
+      res = await fetch(getApiUrl('/products'), {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: form,

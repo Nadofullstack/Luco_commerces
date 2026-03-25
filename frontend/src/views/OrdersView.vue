@@ -102,6 +102,7 @@ import AdminHeader from '../components/admin/AdminHeader.vue'
 import StatsCard from '../components/admin/StatsCard.vue'
 import OrdersTable from '../components/admin/OrdersTable.vue'
 import { ref, computed, onMounted } from 'vue'
+import { getApiUrl } from '../utils/api'
 
 const searchQuery = ref('')
 const orders = ref([])
@@ -172,7 +173,7 @@ const fetchOrders = async () => {
   try {
     isLoading.value = true
     const token = localStorage.getItem('adminToken')
-    const res = await fetch('/api/orders', { 
+    const res = await fetch(getApiUrl('/orders'), { 
       headers: { Authorization: `Bearer ${token}` } 
     })
     const data = await res.json()

@@ -15,19 +15,34 @@
    - Configuration pour la production sur Vercel
    - Contient : `VITE_API_URL=https://shop-luco.onrender.com/api`
 
-3. **`frontend/src/services/api.js`**
+3. **`frontend/src/utils/api.js`** (nouveau)
+   - Fichier utilitaire centralisé pour la configuration de l'API
+   - Exporte `API_URL` et `getApiUrl()` pour construire les URLs d'API
+
+4. **`frontend/src/services/api.js`**
    - Modifié la ligne 6 : `const API_URL = import.meta.env.VITE_API_URL || '/api'`
    - Utilise maintenant la variable d'environnement pour l'URL de l'API
 
-4. **`frontend/vite.config.js`**
+5. **Tous les composants et vues utilisant l'API** (modifiés)
+   - `frontend/src/components/luxe/ProductGridLuxe.vue`
+   - `frontend/src/components/luxe/ContactForm.vue`
+   - `frontend/src/views/HomeView.vue`
+   - `frontend/src/views/ProductDetailView.vue`
+   - `frontend/src/views/AdminLoginView.vue`
+   - `frontend/src/views/CustomersView.vue`
+   - `frontend/src/views/OrdersView.vue`
+   - `frontend/src/views/AdminView.vue`
+   - Tous importent et utilisent `getApiUrl()` de `utils/api.js`
+
+6. **`frontend/vite.config.js`**
    - Ajout de la configuration de build pour la production
    - Configuration du répertoire de sortie et des sourcemaps
 
-5. **`frontend/.gitignore`**
+7. **`frontend/.gitignore`**
    - Ajout des règles pour ignorer `.env` et `.env.local`
-   - Permet de commiter `.env.production` pour Vercel
+   - Permet de commiter `.env.exmaple` pour Vercel
 
-6. **`frontend/vercel.json`** (nouveau)
+8. **`frontend/vercel.json`** (nouveau)
    - Configuration pour le routage SPA (Single Page Application)
    - Configuration des headers CORS pour les appels API
 

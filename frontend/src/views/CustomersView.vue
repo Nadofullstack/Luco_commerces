@@ -261,6 +261,7 @@ import AdminSidebar from '../components/admin/AdminSidebar.vue'
 import AdminHeader from '../components/admin/AdminHeader.vue'
 import StatsCard from '../components/admin/StatsCard.vue'
 import { ref, computed, onMounted } from 'vue'
+import { getApiUrl } from '../utils/api'
 
 const searchQuery = ref('')
 const statusFilter = ref('all')
@@ -318,7 +319,7 @@ const fetchCustomers = async () => {
   try {
     isLoading.value = true
     const token = localStorage.getItem('adminToken')
-    const res = await fetch('/api/customers', { 
+    const res = await fetch(getApiUrl('/customers'), { 
       headers: { Authorization: `Bearer ${token}` } 
     })
     const data = await res.json()

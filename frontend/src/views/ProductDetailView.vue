@@ -134,6 +134,7 @@ import { useRoute, useRouter } from 'vue-router'
 import ProductGalleryLuxe from '../components/luxe/ProductGalleryLuxe.vue'
 import whatsappService from '../services/whatsappService'
 import { useCartStore } from '../stores/cartStore'
+import { getApiUrl } from '../utils/api'
 
 const route = useRoute()
 const router = useRouter()
@@ -181,7 +182,7 @@ const fetchProduct = async () => {
     const productId = route.params.id
     
     // Fetch single product by ID
-    const res = await fetch(`/api/products/public/${productId}`)
+    const res = await fetch(getApiUrl(`/products/public/${productId}`))
     const data = await res.json()
     
     if (!res.ok) {
@@ -191,7 +192,7 @@ const fetchProduct = async () => {
     product.value = data.product
     
     // Fetch related products (same category)
-    const allRes = await fetch('/api/products/public')
+    const allRes = await fetch(getApiUrl('/products/public'))
     const allData = await allRes.json()
     
     if (allRes.ok) {

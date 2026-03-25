@@ -60,7 +60,7 @@ const notification = ref({
   type: 'success'
 })
 
-const API_URL = '/api'
+const API_URL = import.meta.env.VITE_API_URL || '/api'
 
 // Fetch products from API
 const fetchProducts = async () => {

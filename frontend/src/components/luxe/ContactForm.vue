@@ -75,6 +75,7 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
+import { getApiUrl } from '../../utils/api'
 
 const form = reactive({
   name: '',
@@ -103,7 +104,7 @@ const handleSubmit = async () => {
   isLoading.value = true
   
   try {
-    const response = await fetch('/api/contact/send-email', {
+    const response = await fetch(getApiUrl('/contact/send-email'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
