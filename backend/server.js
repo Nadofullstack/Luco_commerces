@@ -14,6 +14,8 @@ const cartRoutes = require('./routes/cartRoutes')
 const { createDefaultAdmin } = require('./controllers/authController')
 // const { createDefaultProducts } = require('./controllers/productController')
 
+// IMPORTANT: Lire PORT de l'environnement AVANT dotenv.config()
+// pour que Render puisse écraser la valeur
 const PORT = process.env.PORT || 3000
 //création d'une instance de express
 const app = express()
@@ -56,7 +58,7 @@ const startServer = async () => {
   } catch (error) {
     console.error("DB connection failed:", error.message)
 
-    // ⚠️ IMPORTANT : on ne crash PAS Render
+    // IMPORTANT : on ne crash PAS Render
     app.listen(PORT, "0.0.0.0", () => {
       console.log(`Server running WITHOUT DB on port ${PORT}`)
     })
