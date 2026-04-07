@@ -1,4 +1,4 @@
-const express = require('express')
+const express = require("express")
 const dotenv = require('dotenv')
 const cors = require('cors')
 
@@ -42,26 +42,25 @@ app.get('/', (req, res) => {
 
 // Connect to MongoDB and start the server
 const startServer = async () => {
-  try {
-    await connectDB()
 
-    console.log("MongoDB connecté")
+  // ✅ Démarrage du serveur UNE seule fois
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server running on port ${PORT}`)
+  });
+
+  try {
+    await connectDB();
+
+    console.log("MongoDB connecté");
 
     await createDefaultAdmin().catch(err => {
-      console.log("Admin skipped:", err.message)
-    })
-
-    app.listen(PORT, "0.0.0.0", () => {
-      console.log(`Server running on port ${PORT}`)
-    })
+      console.log("Admin skipped:", err.message);
+    });
 
   } catch (error) {
-    console.error("DB connection failed:", error.message)
+    console.error("DB connection failed:", error.message);
 
-    // IMPORTANT : on ne crash PAS Render
-    app.listen(PORT, "0.0.0.0", () => {
-      console.log(`Server running WITHOUT DB on port ${PORT}`)
-    })
   }
-}
-startServer()
+};
+
+startServer();
