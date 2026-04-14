@@ -68,7 +68,7 @@ const fetchProducts = async () => {
   error.value = null
 
   try {
-    const response = await fetch(`${API_URL}/products/public`)
+    const response = await fetch(`${API_URL}/products`)
     
     if (!response.ok) {
       throw new Error('Erreur lors du chargement des produits')

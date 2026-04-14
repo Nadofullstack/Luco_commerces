@@ -182,7 +182,7 @@ const fetchProduct = async () => {
     const productId = route.params.id
     
     // Fetch single product by ID
-    const res = await fetch(getApiUrl(`/products/public/${productId}`))
+    const res = await fetch(getApiUrl(`/products/${productId}`))
     const data = await res.json()
     
     if (!res.ok) {
@@ -192,7 +192,7 @@ const fetchProduct = async () => {
     product.value = data.product
     
     // Fetch related products (same category)
-    const allRes = await fetch(getApiUrl('/products/public'))
+    const allRes = await fetch(getApiUrl('/products'))
     const allData = await allRes.json()
     
     if (allRes.ok) {

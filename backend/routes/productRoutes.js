@@ -24,8 +24,8 @@ const storage = multer.diskStorage({
 const upload = multer({ storage })
 
 // Public route - no authentication required (for customers)
-router.get('/public', getProducts)
-router.get('/public/:id', getProductById)
+router.get('/', getProducts)
+router.get('/:id', getProductById)
 
 // Protected routes - admin only (order matters: more specific routes first)
 router.get('/:id', verifyAdminToken, getProductById)

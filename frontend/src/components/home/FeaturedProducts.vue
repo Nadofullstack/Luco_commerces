@@ -30,6 +30,11 @@ const props = defineProps({
     default: () => [],
   },
 })
+
+const res = await
+fetch(`${import.meta.env.VITE_API_URL}/products`)
+if(!res.ok) throw new Error(`HTTP ${res.status}`)
+const data = await res.json()
 const emit = defineEmits(['order', 'view'])
 
 function orderWhatsApp(product) {
