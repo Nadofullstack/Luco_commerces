@@ -91,12 +91,14 @@ const fetchProducts = async () => {
     isLoading.value = true
     error.value = ''
     const API_URL = import.meta.env.VITE_API_URL || '/api'
+    console.log('Fetching from:', `${API_URL}/products`)
     const res = await fetch(`${API_URL}/products`)
-    const data = await res.json()
     
     if (!res.ok) {
-      throw new Error(data.error || 'Erreur lors du chargement des produits')
+      throw new Error(`HTTP ${res.status}: ${res.statusText}`)
     }
+    
+    const data = await res.json()
     
     // Transform database products to match frontend format
     products.value = data.products.map(p => ({
