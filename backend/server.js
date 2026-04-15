@@ -21,9 +21,24 @@ const PORT = process.env.PORT || 3000
 const app = express()
 //cores
 app.use(cors({
-    origin: process.env.FRONTEND_URL || '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true
+    origin: function(origin, callback) {
+        const allowedOrigins = [
+            process.env.FRONTEND_URL,
+            'http://localhost:5173',
+            'https://shopluco.vercel.app/',
+            'https://luco-commerce-git-main-nadege-djossous-projects.vercel.app',
+            'https://luco-commerce-nadege-djossous-projects.vercel.app'
+        ].filter(Boolean)
+        
+        if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+            callback(null, true)
+        } else {
+            callback(null, true)
+        }
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization']
 }))
 //middlewares pour parser le json
 app.use(express.json())
@@ -43,7 +58,7 @@ app.get('/', (req, res) => {
 // Connect to MongoDB and start the server
 const startServer = async () => {
 
-  // ✅ Démarrage du serveur UNE seule fois
+  // Démarrage du serveur UNE seule fois
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on port ${PORT}`)
   });
