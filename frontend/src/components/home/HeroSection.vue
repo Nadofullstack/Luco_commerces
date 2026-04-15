@@ -56,7 +56,7 @@ const props = defineProps({
       'Une sélection premium pour vos besoins quotidiens. L\'élégance et la qualité réunies dans un catalogue exclusif de produits raffinés.',
   },
   primaryLabel: { type: String, default: 'Voir les Produits' },
-  secondaryLabel: { type: String, default: 'Notre Histoire' },
+  secondaryLabel: { type: String, default: 'Nous Contacter' },
 })
 const emit = defineEmits(['primaryClick', 'secondaryClick'])
 

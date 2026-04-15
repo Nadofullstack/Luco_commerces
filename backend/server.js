@@ -51,7 +51,6 @@ const startServer = async () => {
   try {
     await connectDB();
 
-    console.log("MongoDB connecté");
 
     await createDefaultAdmin().catch(err => {
       console.log("Admin skipped:", err.message);

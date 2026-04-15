@@ -162,7 +162,7 @@ function onHeroPrimary() {
 }
 
 function onHeroSecondary() {
-  console.log('hero secondary clicked')
+  router.push('/contact')
 }
 
 function onContact() {
