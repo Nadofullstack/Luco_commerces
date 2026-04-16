@@ -1,4 +1,5 @@
 const Product = require('../models/Product')
+const { uploadToCloudinary, deleteFromCloudinary } = require('../middleware/uploadMiddleware')
 
 exports.getProducts = async (req, res) => {
   try {
@@ -50,26 +51,20 @@ exports.getProductById = async (req, res) => {
   }
 }
 
-// exports.createDefaultProducts = async () => {
-//   const count = await Product.countDocuments()
-//   if (count > 0) return
-
-//   const sample = [
-//     { name: 'Luxe Horizon Watch', sku: 'LUX-001', category: 'Accessories', price: 249, status: 'In Stock', image: 'https://via.placeholder.com/80', description: 'Premium watch.' },
-//     { name: 'Aura Wireless Pods', sku: 'LUX-002', category: 'Electronics', price: 399, status: 'Low Stock', image: 'https://via.placeholder.com/80', description: 'Noise-cancelling earbuds.' },
-//     { name: 'Velvet Essence Serum', sku: 'LUX-003', category: 'Beauty', price: 85, status: 'Out of Stock', image: 'https://via.placeholder.com/80', description: 'Hydrating skin serum.' },
-//   ]
-
-//   await Product.insertMany(sample)
-// }
-
 exports.createProduct = async (req, res) => {
   try {
     const { name, sku, description, category, price, status } = req.body
-    let imageUrl = req.body.image
+    let imageUrl = 'https://via.placeholder.com/400'
 
+    // Upload de l'image vers Cloudinary si un fichier est fourni
     if (req.file) {
-      imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`
+      try {
+        const result = await uploadToCloudinary(req.file.buffer)
+        imageUrl = result.secure_url
+      } catch (uploadError) {
+        console.error('Erreur upload Cloudinary:', uploadError)
+        return res.status(500).json({ error: 'Erreur lors de l\'upload de l\'image.' })
+      }
     }
 
     if (!name || !sku || !price) {
@@ -88,11 +83,12 @@ exports.createProduct = async (req, res) => {
       category: category || 'General',
       price,
       status: status || 'In Stock',
-      image: imageUrl || 'https://via.placeholder.com/80',
+      image: imageUrl,
     })
 
     res.status(201).json({ success: true, product })
   } catch (error) {
+    console.error('Erreur création produit:', error)
     res.status(500).json({ error: 'Erreur serveur lors de la création du produit.' })
   }
 }
@@ -102,17 +98,35 @@ exports.updateProduct = async (req, res) => {
     const { id } = req.params
     const updates = req.body
     
-    // Handle image upload
+    // Upload de la nouvelle image vers Cloudinary si fournie
     if (req.file) {
-      updates.image = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`
+      try {
+        // Supprimer l'ancienne image si elle existe sur Cloudinary
+        const product = await Product.findById(id)
+        if (product && product.image && product.image.includes('cloudinary')) {
+          // Extraire le public_id de l'URL Cloudinary
+          const urlParts = product.image.split('/')
+          const publicIdWithExt = urlParts.slice(-2).join('/')
+          const publicId = publicIdWithExt.split('.')[0]
+          await deleteFromCloudinary(publicId).catch(err => console.log('Erreur suppression:', err))
+        }
+        
+        // Upload de la nouvelle image
+        const result = await uploadToCloudinary(req.file.buffer)
+        updates.image = result.secure_url
+      } catch (uploadError) {
+        console.error('Erreur upload Cloudinary:', uploadError)
+        return res.status(500).json({ error: 'Erreur lors de l\'upload de l\'image.' })
+      }
     }
     
-    const product = await Product.findByIdAndUpdate(id, updates, { new: true })
-    if (!product) {
+    const updatedProduct = await Product.findByIdAndUpdate(id, updates, { new: true })
+    if (!updatedProduct) {
       return res.status(404).json({ error: 'Produit non trouvé.' })
     }
-    res.json({ success: true, product })
+    res.json({ success: true, product: updatedProduct })
   } catch (error) {
+    console.error('Erreur mise à jour produit:', error)
     res.status(500).json({ error: 'Erreur serveur lors de la mise à jour du produit.' })
   }
 }
@@ -120,12 +134,28 @@ exports.updateProduct = async (req, res) => {
 exports.deleteProduct = async (req, res) => {
   try {
     const { id } = req.params
-    const product = await Product.findByIdAndDelete(id)
+    const product = await Product.findById(id)
+    
     if (!product) {
       return res.status(404).json({ error: 'Produit non trouvé.' })
     }
+    
+    // Supprimer l'image de Cloudinary si elle existe
+    if (product.image && product.image.includes('cloudinary')) {
+      try {
+        const urlParts = product.image.split('/')
+        const publicIdWithExt = urlParts.slice(-2).join('/')
+        const publicId = publicIdWithExt.split('.')[0]
+        await deleteFromCloudinary(publicId)
+      } catch (deleteError) {
+        console.log('Erreur suppression image Cloudinary:', deleteError)
+      }
+    }
+    
+    await Product.findByIdAndDelete(id)
     res.json({ success: true, message: 'Produit supprimé.' })
   } catch (error) {
+    console.error('Erreur suppression produit:', error)
     res.status(500).json({ error: 'Erreur serveur lors de la suppression du produit.' })
   }
 }

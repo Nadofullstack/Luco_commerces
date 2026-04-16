@@ -1,8 +1,7 @@
 const express = require('express')
-const multer = require('multer')
-const path = require('path')
 const router = express.Router()
 const verifyAdminToken = require('../middleware/authMiddleware')
+const { upload } = require('../middleware/uploadMiddleware')
 const {
   getProducts,
   getProductById,
@@ -10,18 +9,6 @@ const {
   updateProduct,
   deleteProduct,
 } = require('../controllers/productController')
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '..', 'uploads'))
-  },
-  filename: (req, file, cb) => {
-    const unique = `${Date.now()}-${file.originalname.replace(/\s/g, '-')}`
-    cb(null, unique)
-  },
-})
-
-const upload = multer({ storage })
 
 // Public routes - no authentication required (for customers)
 router.get('/', getProducts)

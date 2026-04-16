@@ -51,14 +51,7 @@
           </router-link>
 
           <!-- Admin Dashboard -->
-          <router-link
-            v-if="isAdminLoggedIn"
-            to="/admin/products"
-            class="hidden md:flex items-center gap-2 px-4 py-2 bg-gold/10 text-gold hover:bg-gold/20 rounded-lg transition-colors text-sm font-medium"
-          >
-            <span class="material-symbols-outlined text-lg">admin_panel_settings</span>
-            <span>Dashboard</span>
-          </router-link>
+        
 
           <!-- Mobile Menu Button -->
           <button 
@@ -154,7 +147,6 @@ const mobileOpen = ref(false)
 
 // Computed
 const cartItemCount = computed(() => cartStore.cartItemCount)
-const isAdminLoggedIn = computed(() => !!localStorage.getItem('adminToken'))
 
 const scrollToProducts = async (e) => {
   e.preventDefault()

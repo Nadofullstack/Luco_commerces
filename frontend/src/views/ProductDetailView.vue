@@ -26,9 +26,11 @@
             <span class="text-slate-100">{{ product.name }}</span>
           </nav>
 
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
             <!-- Gallery -->
-            <ProductGalleryLuxe :product="product" />
+            <div class="lg:sticky lg:top-32">
+              <ProductGalleryLuxe :product="product" />
+            </div>
             
             <!-- Info -->
             <div>
@@ -106,11 +108,11 @@
                 class="bg-slate-800 rounded-lg overflow-hidden hover:transform hover:scale-105 transition-transform"
               >
                 <router-link :to="`/product/${related._id}`">
-                  <div class="aspect-square overflow-hidden">
+                  <div class="aspect-square overflow-hidden bg-navy/50">
                     <img
                       :src="related.image"
                       :alt="related.name"
-                      class="w-full h-full object-cover"
+                      class="w-full h-full object-contain p-3"
                       @error="handleImageError"
                     />
                   </div>

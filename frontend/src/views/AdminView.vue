@@ -55,14 +55,12 @@
         </div>
 
         <!-- Main Grid Layout -->
-        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+        <div>
           <div class="xl:col-span-2">
             <ProductsTable :products="filteredProducts" :pagination="pagination" @edit="editProduct" @delete="deleteProduct" @page-change="handlePageChange" />
           </div>
 
-          <div class="space-y-6 xl:col-span-1">
-            <InsightsCard />
-          </div>
+          
         </div>
         <div v-if="error" class="mt-4 px-4 py-2 bg-red-100 text-red-700 rounded-lg text-sm">{{ error }}</div>
       </div>
@@ -318,7 +316,7 @@ const fetchProducts = async (page = 1) => {
   try {
     isLoading.value = true
     const token = localStorage.getItem('adminToken')
-    const res = await fetch(`/api/products?page=${page}&limit=10`, { headers: { Authorization: `Bearer ${token}` } })
+    const res = await fetch(getApiUrl(`/products?page=${page}&limit=10`), { headers: { Authorization: `Bearer ${token}` } })
     const data = await res.json()
     isLoading.value = false
     if (!res.ok) {
@@ -350,7 +348,7 @@ const deleteProduct = (item) => {
 const confirmDelete = async () => {
   try {
     const token = localStorage.getItem('adminToken')
-    const res = await fetch(`/api/products/${productToDelete.value._id}`, {
+    const res = await fetch(getApiUrl(`/products/${productToDelete.value._id}`), {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` },
     })

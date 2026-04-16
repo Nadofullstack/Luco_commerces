@@ -2,11 +2,11 @@
   <div
     class="group bg-anthracite/40 rounded-2xl border border-white/5 overflow-hidden hover:border-gold/50 transition-all duration-300 flex flex-col cursor-pointer"
   >
-    <div class="relative overflow-hidden aspect-square" @click="handleSelect">
+    <div class="relative overflow-hidden aspect-square bg-navy/50" @click="handleSelect">
       <img
         :src="product.image"
         :alt="product.name"
-        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+        class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-700"
       />
     </div>
     <div class="p-6 flex flex-col grow">
