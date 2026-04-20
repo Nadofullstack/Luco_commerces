@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-6">
     <!-- Main Image -->
-    <div class="aspect-square max-w-lg mx-auto bg-navy rounded-2xl overflow-hidden relative group">
+    <div class="aspect-square max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg mx-auto bg-navy rounded-2xl overflow-hidden relative group">
       <img
         :src="activeImage"
         class="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
@@ -11,7 +11,7 @@
     </div>
     
     <!-- Thumbnail Images -->
-    <div v-if="productImages.length > 1" class="grid grid-cols-4 gap-4 max-w-lg mx-auto">
+    <div v-if="productImages.length > 1" class="grid grid-cols-4 gap-2 sm:gap-4 max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg mx-auto">
       <button
         v-for="(img, idx) in productImages"
         :key="idx"

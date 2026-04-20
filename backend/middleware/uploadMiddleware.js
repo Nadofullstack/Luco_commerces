@@ -8,7 +8,7 @@ const storage = multer.memoryStorage()
 const upload = multer({ 
   storage: storage,
   limits: {
-    fileSize: 5 * 1024 * 1024 // Limite à 5MB
+    fileSize: 1 * 1024 * 1024 // Limite à 5MB
   },
   fileFilter: (req, file, cb) => {
     // Vérifier le type de fichier
@@ -28,8 +28,8 @@ const uploadToCloudinary = (buffer, folder = 'luco_commerce/products') => {
       {
         folder: folder,
         transformation: [
-          { width: 600, height: 600, crop: 'limit' }, // Réduit à 600x600px max
-          { quality: 'auto:good' }, // Qualité optimisée
+          { width: 100, height: 100, crop: 'limit' }, // Réduit à 400x400px max
+          { quality: 'auto:eco' }, // Qualité économique pour fichiers plus légers
           { fetch_format: 'auto' } // Format automatique (WebP si supporté)
         ]
       },

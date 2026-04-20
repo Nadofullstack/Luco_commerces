@@ -6,11 +6,11 @@
       <img
         :src="product.image"
         :alt="product.name"
-        class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-700"
+        class="w-full h-full object-contain p-2 sm:p-4 group-hover:scale-105 transition-transform duration-700"
       />
     </div>
     <div class="p-6 flex flex-col grow">
-      <h3 class="text-lg font-bold mb-2 line-clamp-2" @click="handleSelect">{{ product.name }}</h3>
+      <h3 class="text-lg font-bold line-clamp-2" @click="handleSelect">{{ product.name }}</h3>
       <p v-if="product.description" class="text-slate-400 text-sm mb-4 line-clamp-2">{{ product.description }}</p>
       <div class="mt-auto">
         <p class="text-2xl font-bold text-primary mb-4">{{ product.price }}</p>

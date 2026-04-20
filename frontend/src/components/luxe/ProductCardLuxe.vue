@@ -4,7 +4,7 @@
   >
     <div class="relative aspect-square overflow-hidden bg-navy">
       <img
-        class="w-full h-full object-contain p-4 transition-transform duration-500 group-hover:scale-105"
+        class="w-full h-full object-contain p-2 sm:p-4 transition-transform duration-500 group-hover:scale-105"
         :src="product.image"
         :alt="product.name"
       />
