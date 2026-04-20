@@ -1,45 +1,29 @@
 const mongoose = require('mongoose')
 
-const cartItemSchema = new mongoose.Schema({
-  product: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product',
-    required: true
-  },
-  quantity: {
-    type: Number,
-    required: true,
-    min: 1,
-    default: 1
-  },
-  price: {
-    type: Number,
-    required: true
-  }
-}, { _id: false })
-
-const cartSchema = new mongoose.Schema({
-  customer: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Customer',
+const CartSchema = new mongoose.Schema({
+  sessionId: {
+    type: String,
     required: true,
     unique: true
   },
-  items: [cartItemSchema],
-  totalAmount: {
-    type: Number,
-    default: 0
+  items: [{
+    product: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product',
+      required: true
+    },
+    quantity: {
+      type: Number,
+      required: true,
+      min: 1,
+      default: 1
+    }
+  }],
+  expiresAt: {
+    type: Date,
+    default: () => new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 jours
+    index: { expires: 0 }
   }
-}, {
-  timestamps: true
-})
+}, { timestamps: true })
 
-// Calculer le total avant chaque sauvegarde
-cartSchema.pre('save', function(next) {
-  this.totalAmount = this.items.reduce((total, item) => {
-    return total + (item.price * item.quantity)
-  }, 0)
-  next()
-})
-
-module.exports = mongoose.model('Cart', cartSchema)
+module.exports = mongoose.model('Cart', CartSchema)

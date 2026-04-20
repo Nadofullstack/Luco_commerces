@@ -5,14 +5,14 @@ const {
   addToCart, 
   updateQuantity, 
   removeFromCart, 
-  clearCart 
+  clearCart,
+  generateSession
 } = require('../controllers/cartController')
-const verifyCustomerToken = require('../middleware/customerAuthMiddleware')
 
-// All routes require customer authentication
-router.use(verifyCustomerToken)
+// GET /api/cart/session - Generate new session ID
+router.get('/session', generateSession)
 
-// GET /api/cart - Get customer's cart
+// GET /api/cart - Get cart by session ID
 router.get('/', getCart)
 
 // POST /api/cart/add - Add product to cart

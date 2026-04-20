@@ -1,6 +1,6 @@
 <template>
   <aside 
-    class="bg-navy dark:bg-midnight border-r border-slate-800 flex flex-col transition-all duration-300"
+    class="bg-navy dark:bg-midnight border-r border-slate-800 flex flex-col transition-all duration-300 h-full"
     :class="isCollapsed ? 'w-20' : 'w-64'"
   >
     <div class="p-4 flex items-center gap-3" :class="isCollapsed ? 'justify-center' : ''">
@@ -30,6 +30,7 @@
         <span class="material-symbols-outlined">close</span>
       </button>
     </div>
+    
     <nav class="flex-1 px-2 lg:px-4 space-y-2 mt-2">
       <router-link
         v-for="item in menuItems"
@@ -39,22 +40,19 @@
         class="flex items-center gap-3 px-3 py-3 rounded-xl transition-all"
         :class="[
           route.path === item.path ? 'bg-primary text-midnight' : 'text-slate-400 hover:text-white hover:bg-white/5',
-          item.highlight ? 'shadow-lg shadow-primary/20' : '',
           isCollapsed ? 'justify-center' : ''
         ]"
       >
-        <span class="material-symbols-outlined" :class="item.iconBold ? 'font-bold' : ''">{{ item.icon }}</span>
-        <span v-if="!isCollapsed" :class="item.highlight ? 'font-bold text-sm' : 'font-medium text-sm'">{{ item.name }}</span>
+        <span class="material-symbols-outlined" :class="route.path === item.path ? 'font-bold' : ''">{{ item.icon }}</span>
+        <span v-if="!isCollapsed" class="font-medium text-sm">{{ item.name }}</span>
       </router-link>
-      
-     
     </nav>
-    
   </aside>
 </template>
 
 <script setup>
 import { useRoute } from 'vue-router'
+
 const route = useRoute()
 
 defineProps({
@@ -68,13 +66,12 @@ const emit = defineEmits(['toggle', 'link-click'])
 
 const menuItems = [
   { name: 'Dashboard', icon: 'dashboard', path: '/admin' },
-  { name: 'Products', icon: 'inventory_2', path: '/admin/products', highlight: true, iconBold: true },
+  { name: 'Products', icon: 'inventory_2', path: '/admin/products' },
   { name: 'Orders', icon: 'shopping_cart', path: '/admin/orders' },
-  { name: 'Customers', icon: 'group', path: '/admin/customers' },
 ]
 
 const handleLinkClick = () => {
-  // Émettre l'événement link-click pour fermer le sidebar en mobile
+  // Émettre l'événement pour fermer le sidebar en mobile
   emit('link-click')
 }
 </script>

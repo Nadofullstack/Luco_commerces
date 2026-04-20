@@ -56,23 +56,11 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed, onMounted } from 'vue'
 
 // Props avec valeurs par défaut
 const props = defineProps({
   modelValue: { 
-    type: String, 
-    default: '' 
-  },
-  userName: { 
-    type: String, 
-    default: 'Alexander Vault' 
-  },
-  userRole: { 
-    type: String, 
-    default: 'Store Manager' 
-  },
-  avatarUrl: { 
     type: String, 
     default: '' 
   },
@@ -86,6 +74,41 @@ const defaultAvatar = 'https://lh3.googleusercontent.com/aida-public/AB6AXuDFTXS
 
 // Recherche locale
 const search = ref(props.modelValue)
+
+// Informations de l'admin connecté
+const adminUser = ref(null)
+
+// Computed pour le nom de l'utilisateur
+const userName = computed(() => {
+  return adminUser.value?.name || 'Administrateur'
+})
+
+// Computed pour le rôle de l'utilisateur
+const userRole = computed(() => {
+  return adminUser.value?.role || 'Admin'
+})
+
+// Computed pour l'avatar
+const avatarUrl = computed(() => {
+  return adminUser.value?.avatar || ''
+})
+
+// Récupérer les informations de l'admin depuis localStorage
+const loadAdminInfo = () => {
+  try {
+    const storedUser = localStorage.getItem('adminUser')
+    if (storedUser) {
+      adminUser.value = JSON.parse(storedUser)
+    }
+  } catch (error) {
+    console.error('Erreur lors du chargement des infos admin:', error)
+  }
+}
+
+// Charger les infos au montage du composant
+onMounted(() => {
+  loadAdminInfo()
+})
 
 // Watcher pour émettre les changements
 watch(search, (newValue) => {

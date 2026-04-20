@@ -151,9 +151,11 @@ import AdminHeader from '../components/admin/AdminHeader.vue'
 import StatsCard from '../components/admin/StatsCard.vue'
 import ProductsTable from '../components/admin/ProductsTable.vue'
 
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router' // Ajoutez cette importation
 import { getApiUrl } from '../utils/api'
 
+const route = useRoute() // Ajoutez cette ligne
 const searchQuery = ref('')
 const products = ref([])
 const isLoading = ref(false)
@@ -162,6 +164,13 @@ const sidebarCollapsed = ref(false)
 const currentPage = ref(1)
 const paginationInfo = ref({ page: 1, limit: 10, total: 0, totalPages: 0, from: 1, to: 10 })
 const sidebarOpen = ref(false)
+
+// Ajoutez ce watch pour fermer le sidebar automatiquement quand la route change
+watch(() => route.path, () => {
+  if (window.innerWidth < 1024) {
+    sidebarOpen.value = false
+  }
+})
 
 const handleSidebarToggle = (type) => {
   if (type === 'mobile') {
@@ -178,7 +187,7 @@ const handleLinkClick = () => {
   }
 }
 
-// Modal state
+// Reste de votre code inchangé...
 const showModal = ref(false)
 const showDeleteModal = ref(false)
 const isEditMode = ref(false)
@@ -200,7 +209,6 @@ const closeModal = () => {
   showModal.value = false
   isEditMode.value = false
   editingProductId.value = null
-  // Reset form
   newProduct.value = {
     name: '',
     sku: '',
@@ -265,11 +273,9 @@ const submitProductForm = async () => {
     form.append('price', newProduct.value.price)
     form.append('status', newProduct.value.status)
     
-    // Handle image - send new file if uploaded, otherwise keep existing
     if (newProduct.value.imageFile) {
       form.append('image', newProduct.value.imageFile)
     } else if (newProduct.value.image) {
-      // Keep existing image URL
       form.append('image', newProduct.value.image)
     }
 
@@ -277,7 +283,6 @@ const submitProductForm = async () => {
     let data
 
     if (isEditMode.value) {
-      // Update existing product
       res = await fetch(getApiUrl(`/products/${editingProductId.value}`), {
         method: 'PUT',
         headers: { Authorization: `Bearer ${token}` },
@@ -288,7 +293,6 @@ const submitProductForm = async () => {
       const idx = products.value.findIndex((p) => p._id === editingProductId.value)
       if (idx > -1) products.value[idx] = data.product
     } else {
-      // Create new product
       res = await fetch(getApiUrl('/products'), {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
@@ -380,7 +384,15 @@ const editProduct = (item) => {
   showModal.value = true
 }
 
-onMounted(fetchProducts)
+onMounted(() => {
+  fetchProducts()
+  // Ajoutez un event listener pour la redimension de la fenêtre
+  window.addEventListener('resize', () => {
+    if (window.innerWidth >= 1024) {
+      sidebarOpen.value = false
+    }
+  })
+})
 
 const filteredProducts = computed(() => {
   let list = products.value
@@ -391,7 +403,6 @@ const filteredProducts = computed(() => {
   return list
 })
 
-// Handle page change from ProductsTable component
 const handlePageChange = (page) => {
   fetchProducts(page)
 }

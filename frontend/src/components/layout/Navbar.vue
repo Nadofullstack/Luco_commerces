@@ -74,7 +74,7 @@
       leave-from-class="opacity-100 translate-y-0"
       leave-to-class="opacity-0 -translate-y-2"
     >
-      <div v-if="mobileOpen" class="md:hidden bg-navy/95 backdrop-blur-lg border-t border-navy/50">
+      <div v-if="mobileOpen" class=" flex justify-center items-center md:hidden bg-navy/95 backdrop-blur-lg border-t border-navy/50">
         <div class="px-4 py-4 space-y-1">
           <router-link 
             class="flex items-center gap-3 px-4 py-3 text-slate-200 hover:bg-gold/10 hover:text-gold rounded-lg transition-all" 
@@ -120,15 +120,7 @@
             </span>
           </router-link>
           
-          <router-link 
-            v-if="isAdminLoggedIn" 
-            class="flex items-center gap-3 px-4 py-3 text-gold hover:bg-gold/10 rounded-lg transition-all border border-gold/30" 
-            to="/admin/products" 
-            @click="mobileOpen = false"
-          >
-            <span class="material-symbols-outlined text-xl">admin_panel_settings</span>
-            <span class="font-medium">Dashboard Admin</span>
-          </router-link>
+         
         </div>
       </div>
     </transition>

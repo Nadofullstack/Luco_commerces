@@ -1,217 +1,176 @@
 const Cart = require('../models/Cart')
 const Product = require('../models/Product')
 
-// Get cart for the authenticated customer
-const getCart = async (req, res) => {
+// Générer un ID de session unique
+const generateSessionId = () => {
+  return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+}
+
+// Get cart by session ID
+exports.getCart = async (req, res) => {
   try {
-    const customerId = req.customer._id
+    const { sessionId } = req.query
     
-    // Find or create cart for customer
-    let cart = await Cart.findOne({ customer: customerId })
-      .populate('items.product', 'name price image status category')
-    
-    // Create empty cart if doesn't exist
-    if (!cart) {
-      cart = new Cart({
-        customer: customerId,
-        items: [],
-        totalAmount: 0
-      })
-      await cart.save()
+    if (!sessionId) {
+      return res.status(400).json({ error: 'Session ID requis' })
     }
+
+    let cart = await Cart.findOne({ sessionId }).populate('items.product')
     
-    res.json({ cart })
+    if (!cart) {
+      cart = await Cart.create({ sessionId, items: [] })
+    }
+
+    res.json({ success: true, cart })
   } catch (error) {
-    res.status(500).json({ error: error.message })
+    console.error('[CartController] Erreur getCart:', error)
+    res.status(500).json({ error: 'Erreur serveur' })
   }
 }
 
 // Add product to cart
-const addToCart = async (req, res) => {
+exports.addToCart = async (req, res) => {
   try {
-    const { productId, quantity = 1 } = req.body
-    const customerId = req.customer._id
-    
-    // Validate product exists
+    const { sessionId, productId, quantity = 1 } = req.body
+
+    if (!sessionId || !productId) {
+      return res.status(400).json({ error: 'Session ID et Product ID requis' })
+    }
+
+    // Vérifier que le produit existe
     const product = await Product.findById(productId)
     if (!product) {
-      return res.status(404).json({ error: 'Product not found' })
+      return res.status(404).json({ error: 'Produit non trouvé' })
     }
-    
-    // Check stock availability
-    if (product.status === 'Out of Stock') {
-      return res.status(400).json({ error: 'Product is out of stock' })
-    }
-    
-    // Find or create cart
-    let cart = await Cart.findOne({ customer: customerId })
+
+    // Trouver ou créer le panier
+    let cart = await Cart.findOne({ sessionId })
     
     if (!cart) {
-      cart = new Cart({
-        customer: customerId,
-        items: []
+      cart = await Cart.create({
+        sessionId,
+        items: [{ product: productId, quantity }]
       })
-    }
-    
-    // Check if product already in cart
-    const existingItemIndex = cart.items.findIndex(
-      item => item.product.toString() === productId
-    )
-    
-    if (existingItemIndex > -1) {
-      // Update quantity if already in cart
-      const newQuantity = cart.items[existingItemIndex].quantity + quantity
+    } else {
+      // Vérifier si le produit est déjà dans le panier
+      const existingItem = cart.items.find(item => item.product.toString() === productId)
       
-      // Check stock
-      if (product.status === 'Low Stock' && newQuantity > 10) {
-        return res.status(400).json({ error: 'Not enough stock available' })
+      if (existingItem) {
+        existingItem.quantity += quantity
+      } else {
+        cart.items.push({ product: productId, quantity })
       }
       
-      cart.items[existingItemIndex].quantity = newQuantity
-    } else {
-      // Add new item to cart
-      cart.items.push({
-        product: productId,
-        quantity: quantity,
-        price: product.price // Store snapshot of price
-      })
+      await cart.save()
     }
-    
-    await cart.save()
-    
-    // Populate product details for response
-    const populatedCart = await Cart.findById(cart._id)
-      .populate('items.product', 'name price image status category')
-    
-    res.json({ 
-      message: 'Product added to cart',
-      cart: populatedCart 
-    })
+
+    // Populate le panier avant de le retourner
+    cart = await Cart.findOne({ sessionId }).populate('items.product')
+
+    res.json({ success: true, cart })
   } catch (error) {
-    res.status(500).json({ error: error.message })
+    console.error('[CartController] Erreur addToCart:', error)
+    res.status(500).json({ error: 'Erreur serveur' })
   }
 }
 
-// Update quantity of an item in cart
-const updateQuantity = async (req, res) => {
+// Update item quantity
+exports.updateQuantity = async (req, res) => {
   try {
-    const { productId, quantity } = req.body
-    const customerId = req.customer._id
-    
-    if (!quantity || quantity < 1) {
-      return res.status(400).json({ error: 'Quantity must be at least 1' })
+    const { sessionId, productId, quantity } = req.body
+
+    if (!sessionId || !productId || quantity === undefined) {
+      return res.status(400).json({ error: 'Session ID, Product ID et quantity requis' })
     }
-    
-    const cart = await Cart.findOne({ customer: customerId })
+
+    if (quantity < 1) {
+      return res.status(400).json({ error: 'La quantité doit être au moins 1' })
+    }
+
+    const cart = await Cart.findOne({ sessionId })
     
     if (!cart) {
-      return res.status(404).json({ error: 'Cart not found' })
+      return res.status(404).json({ error: 'Panier non trouvé' })
     }
+
+    const item = cart.items.find(item => item.product.toString() === productId)
     
-    const itemIndex = cart.items.findIndex(
-      item => item.product.toString() === productId
-    )
-    
-    if (itemIndex === -1) {
-      return res.status(404).json({ error: 'Product not found in cart' })
+    if (!item) {
+      return res.status(404).json({ error: 'Produit non trouvé dans le panier' })
     }
-    
-    // Verify stock availability
-    const product = await Product.findById(productId)
-    if (!product) {
-      return res.status(404).json({ error: 'Product not found' })
-    }
-    
-    if (product.status === 'Out of Stock') {
-      return res.status(400).json({ error: 'Product is out of stock' })
-    }
-    
-    cart.items[itemIndex].quantity = quantity
-    
+
+    item.quantity = quantity
     await cart.save()
-    
-    const populatedCart = await Cart.findById(cart._id)
-      .populate('items.product', 'name price image status category')
-    
-    res.json({ 
-      message: 'Quantity updated',
-      cart: populatedCart 
-    })
+
+    const updatedCart = await Cart.findOne({ sessionId }).populate('items.product')
+
+    res.json({ success: true, cart: updatedCart })
   } catch (error) {
-    res.status(500).json({ error: error.message })
+    console.error('[CartController] Erreur updateQuantity:', error)
+    res.status(500).json({ error: 'Erreur serveur' })
   }
 }
 
 // Remove product from cart
-const removeFromCart = async (req, res) => {
+exports.removeFromCart = async (req, res) => {
   try {
+    const { sessionId } = req.body
     const { productId } = req.params
-    const customerId = req.customer._id
-    
-    const cart = await Cart.findOne({ customer: customerId })
+
+    if (!sessionId || !productId) {
+      return res.status(400).json({ error: 'Session ID et Product ID requis' })
+    }
+
+    const cart = await Cart.findOne({ sessionId })
     
     if (!cart) {
-      return res.status(404).json({ error: 'Cart not found' })
+      return res.status(404).json({ error: 'Panier non trouvé' })
     }
-    
-    const itemIndex = cart.items.findIndex(
-      item => item.product.toString() === productId
-    )
-    
-    if (itemIndex === -1) {
-      return res.status(404).json({ error: 'Product not found in cart' })
-    }
-    
-    // Remove item from cart
-    cart.items.splice(itemIndex, 1)
-    
+
+    cart.items = cart.items.filter(item => item.product.toString() !== productId)
     await cart.save()
-    
-    const populatedCart = await Cart.findById(cart._id)
-      .populate('items.product', 'name price image status category')
-    
-    res.json({ 
-      message: 'Product removed from cart',
-      cart: populatedCart 
-    })
+
+    const updatedCart = await Cart.findOne({ sessionId }).populate('items.product')
+
+    res.json({ success: true, cart: updatedCart })
   } catch (error) {
-    res.status(500).json({ error: error.message })
+    console.error('[CartController] Erreur removeFromCart:', error)
+    res.status(500).json({ error: 'Erreur serveur' })
   }
 }
 
 // Clear entire cart
-const clearCart = async (req, res) => {
+exports.clearCart = async (req, res) => {
   try {
-    const customerId = req.customer._id
-    
-    const cart = await Cart.findOne({ customer: customerId })
+    const { sessionId } = req.body
+
+    if (!sessionId) {
+      return res.status(400).json({ error: 'Session ID requis' })
+    }
+
+    const cart = await Cart.findOne({ sessionId })
     
     if (!cart) {
-      return res.status(404).json({ error: 'Cart not found' })
+      return res.status(404).json({ error: 'Panier non trouvé' })
     }
-    
+
     cart.items = []
-    cart.totalAmount = 0
-    
     await cart.save()
-    
-    res.json({ 
-      message: 'Cart cleared',
-      cart: {
-        customer: customerId,
-        items: [],
-        totalAmount: 0
-      }
-    })
+
+    res.json({ success: true, cart })
   } catch (error) {
-    res.status(500).json({ error: error.message })
+    console.error('[CartController] Erreur clearCart:', error)
+    res.status(500).json({ error: 'Erreur serveur' })
   }
 }
 
-module.exports = {
-  getCart,
-  addToCart,
-  updateQuantity,
-  removeFromCart,
-  clearCart
+// Generate session ID
+exports.generateSession = async (req, res) => {
+  try {
+    const sessionId = generateSessionId()
+    res.json({ success: true, sessionId })
+  } catch (error) {
+    console.error('[CartController] Erreur generateSession:', error)
+    res.status(500).json({ error: 'Erreur serveur' })
+  }
 }

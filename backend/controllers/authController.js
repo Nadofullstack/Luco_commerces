@@ -5,6 +5,7 @@ const createDefaultAdmin = async () => {
   const existing = await Admin.findOne({ email: 'admin@luco.com' })
   if (!existing) {
     await Admin.create({
+      name: 'Nadège Djossou',
       email: 'admin@luco.com',
       password: 'password',
     })
@@ -60,7 +61,8 @@ exports.login = async (req, res) => {
       user: { 
         id: admin._id,
         email: admin.email,
-        name: admin.name || 'Administrateur'
+        name: admin.name || 'Administrateur',
+        role: 'Admin'
       },
       token,
       expiresIn: '24h'
